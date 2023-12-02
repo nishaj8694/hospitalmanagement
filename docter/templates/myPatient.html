@@ -1,0 +1,47 @@
+{% extends "doc.html" %}
+
+{% block 'content'%}
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <div class="col-12">
+            <div class="bg-transBody rounded h-100 p-4">
+                <div class="d-flex justify-content-between">
+                    <h6>PATIENT LIST</h6>
+                    {% if today%}
+                        <a href="{% url 'docter:myPatient' %}">All</a>
+                    {%else%}
+                       <a href="{% url 'docter:today_Patient' %}">TODAY</a>
+                    {%endif%}
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Bill no</th>
+                                <th scope="col">Patient Name</th>
+                                <th scope="col">Appointment date</th>
+                                <th scope="col">Appointment time</th>
+                                <th scope="col">Mention Reasons</th>
+                                
+                                 
+                                
+                            </tr>
+                        </thead>
+                        <tbody>  
+                          {% for i in Patients%}
+                            <tr> 
+                                <td>{{i.id}}</td>
+                                <td>{{i.patient}}</td>
+                                <td>{{i.appointment_date}}</td>
+                                <td>{{i.appointment_time}}</td>
+                                <td>{{i.reason}}</td>
+                            </tr>    
+                          {%endfor%}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock%}

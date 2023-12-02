@@ -1,0 +1,84 @@
+{% extends "admin.html" %}
+
+{% block 'content'%}
+<div class="row d-flex justify-content-center align-items-center">
+ <div class="col-lg-6 col-sm-12 mt-5 mx-5 "  >
+    <canvas id="monthly_sale" style="background-color:rgb(246, 249, 248)"></canvas>
+ </div>
+
+</div>
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4 d-flex justify-content-center align-items-center">
+        <div class="col-lg-6 col-sm-12" >
+            <div class="bg-light rounded h-100 p-4">
+                <h6 class="mb-4">monthly_sale</h6>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Year</th>
+                                <th scope="col">Total revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody>  
+                          {% for i in order%}
+                            <tr> 
+                                <td>{{i.year}}</td> 
+                                <td>{{i.total_revenue}}</td>
+                            </tr>     
+                          {%endfor%}
+                        </tbody>
+                    </table>
+                </div>
+                <form action="{% url 'download' %}" method="post">
+                    {%csrf_token%}
+                    <button class="btn btn-primary" type="submit" name="action" value="year">download</button>
+                </form> 
+            </div>
+        </div>
+    </div>
+</div>        
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    var salesData = JSON.parse('{{ sales_data|safe}}');
+    console.log(salesData);
+    var labels = [];
+    var data = [];
+    for (var i = 0; i < salesData.length; i++) {
+        var year = salesData[i].year; 
+        var totalRevenue = salesData[i].total_revenue; 
+        labels.push(year); 
+        data.push(totalRevenue); 
+    }
+
+    var ctx = document.getElementById('monthly_sale').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Yearly Sales',
+                data: data,
+                backgroundColor: ['rgba(75, 192, 192, 0.2)','rgba(45, 172, 122, 0.4)',
+                'rgba(45, 12, 22, 0.4)','rgba(134, 12, 222, 0.4)','rgba(288, 172, 122, 0.4)',],
+                borderColor: 'rgba(55, 142, 182, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes:[{
+                    ticks:{
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+
+});
+</script>
+
+{%endblock%}

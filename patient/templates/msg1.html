@@ -1,0 +1,37 @@
+{% extends "pat_chat.html" %}
+     {% load static%}
+
+
+            {% block 'subject' %}
+                  <div id="chat-popup" class="chat-popup card">
+                    <div class="chat-popup-header col-lg-12 shadow-lg p-2 rounded p-2" >
+                      <div class="row">
+                         <div class="col-10">
+                          {% if Person.docter.user.online%}
+                            <h5 class="chat-room-name ml-2 " >{{Person.docter}}</h5>
+                            <h6 class="ml-1" id="user-onoff" style="color: rgb(7, 74, 7);">online</h6>
+                          {%else%}
+                            <h5 class="chat-room-name  ml-2 " >{{Person.docter}}</h5>
+                            <h6 class="ml-1" id="user-onoff" style="color: rgb(108, 2, 2);">offline</h6>
+                         {%endif%}  
+                         </div>
+                         <div class="col-2">
+                            <button type="button" id="close-chat-btn" class="btn btn-ligth" style="float: right; margin-bottom: 2px;">X</button>     
+                         </div>
+
+                      </div>
+                    
+                    </div>
+                       <div id="chat-log" class="px-4" style="height: 385px; overflow-y: scroll; position: relative; " disabled></div>
+                       <div style="position: relative; margin-bottom: 10px;" class="mx-2">
+                          <input id="chat-message-input" class=" w-100 bg-light rounded-pill border-0"  type="text" style="height: 40px; padding-left:15px ; " >
+                          <button id="chat-message-submit" class="btn btn-primary rounded-pill"  style="position:absolute; right: 3px; bottom: 2px;">Send</button>
+                       </div>
+                        {{ id|json_script:"id" }}
+                        {{username|json_script:"username"}}
+                        
+                        <script src="{% static 'chat\js\chat.js' %}"></script>   
+                    </div> 
+               
+            {%endblock%}
+        

@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block 'content' %}
+{% load static%}
+<div class="breadcrumb-option">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb__links">
+                    <a href="./index.html">
+                        <i class="fa fa-home"></i>
+                         Home</a>
+                    <span>Product</span><span class="float-right ronunded-pill">
+                        <select onchange="window.location.href=this.value;"
+                        class="btn bg-light rounded-3 form-select" aria-label="Default select example">
+                            <option value="">sortby</option>
+                            <option value="{% url 'home:high' item=item  %}">Low to High</option>
+                            <option value="{% url 'home:low' item=item %}">High to Low</option>
+                        </select> 
+                        
+                        
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+
+<!-- Shop Section Begin -->
+<section class="shop spad">
+    <div class="container">
+        <div class="row px-3">
+            <div class="col-lg-3 col-md-3 border-0 bg-light">
+                <div class="shop__sidebar">
+                    <div class="sidebar__categories">
+                        <div class="section-title mt-2">
+                            <h4>Categories</h4>
+                        </div>
+                        <div class="categories__accordion">
+                            <div class="accordion" id="accordionExample">
+                              <div class="p-3 bg-white">
+                                <div class="card">
+                                    <div class="card-heading active">
+                                        <a data-toggle="collapse" data-target="#collapseOne">Medicine</a>
+                                    </div>
+                                    <div id="collapseOne" class="collapse {% if item != 'none' %} show {%endif%}" data-parent="#accordionExample">
+                                        <div class="card-body">
+                                            {% for i in category%}
+                                            <ul>
+                                                {% if i.medicine_type is null%}
+
+                                                <li style="list-style: none;" class="border-bottom" ><a href="{% url 'home:medicine' i.name %}" class=" {% if i.name == item %} active text-primary {%endif%}">{{i.name}}</a>
+                                                        {% for j in i.subcate.all%} 
+                                                        <ul>
+                                    
+                                                                <li><a href="{% url 'home:medicine' j.name %}" class=" {% if j.name == item %} active {%endif%} ">{{j.name}}</a></li>
+                                                     
+                                                        </ul>
+                                                        {%endfor%}
+                                                    </li>
+                                                {%endif%}
+                                            </ul>
+                                            {%endfor%}
+                                                
+                                              
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                              </div>  
+                                <!-- <div class="card">
+                                    <div class="card-heading">
+                                        <a data-toggle="collapse" data-target="#collapseTwo">Equipment</a>
+                                    </div>
+                                    <div id="collapseTwo" class="collapse" data-parent="#accordionExample">
+                                        <div class="card-body">
+                                            <ul>
+                                                <li><a href="#"></a></li>
+                                                <li><a href="#"></a></li>
+                                                <li><a href="#"></a></li>
+                                                <li><a href="#"></a></li>
+                                                <li><a href="#"></a></li>
+                                                <li><a href="#"></a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="sidebar__filter">
+                        <div class="section-title">
+                            <h4>Shop by price</h4>
+                        </div>
+                        <form >
+                            <div class="filter-range-wrap">
+                                <div class="price-range ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"
+                                data-min="1" data-max="1000"></div> 
+                                <div class="range-slider">
+                                    <div class="price-input">
+                                        <p>Price:</p>
+                                        <input type="text" id="minamount">
+                                        <input type="text" id="maxamount">
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <a href="#">Filter</a>
+                    </div> -->
+                </div>
+
+            <div class="col-lg-9 col-md-9 px-5">
+                
+    {% if messages%}                  
+        {% for message in messages %}
+        {% if message.tags == 'error'%}
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script>
+                var m="{{message}}";
+                console.log(m);
+                Swal.fire({
+                        position: 'center',
+                        icon: 'error',
+                        title: m,
+                        showConfirmButton: false,
+                        timer: 4000
+                        })
+               </script>
+               {%endif%}
+        {% if message.tags == 'success'%}
+               <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+               <script>
+                   var m="{{message}}";
+                   console.log(m);
+                   Swal.fire({
+                           position: 'center',
+                           icon: 'success',
+                           title: m,
+                           showConfirmButton: false,
+                           timer: 4500
+                           })
+                  </script>
+                  {%endif%}       
+   {% endfor %}
+{%endif%} 
+
+
+
+
+
+
+           
+              {%if item_list%}
+                <div class="row">
+                    {% for i in item_list %}  
+                            <div class="col-lg-4 col-md-6  ">
+                                <div class="product__item ">
+                                    <div class="product__item__pic set-bg border border-top-1" data-setbg="{{i.image.url}}">
+                                        <div class="label new">{{i.catagory}}</div>
+                                        <!-- <ul class="product__hover">
+                                            <li><a href="" class="image-popup"><span class="arrow_expand"></span></a></li>
+                                            <li><a href="#"><span class="icon_heart_alt"></span></a></li>
+                                            <li><a href="#"><span class="icon_bag_alt"></span></a></li>
+                                        </ul> -->
+                                    </div>
+                                    <div class="product__item__text border border-top-1">
+                                        <h6><a href="{%url 'home:product_page' i.id %}">{{i.name}}</a></h6>
+                                        <!-- <div class="rating">
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                        </div> -->
+                                        {%if i.item.exists %}
+                                                <div class="product__price">${{i.item.first.price}}</div>
+
+                                        {%endif%}
+                                    </div>
+                                </div>
+                            </div>
+                    <!-- <div class="col-lg-12 text-center">
+                        <div class="pagination__option">
+                            <a href="#">1</a>
+                            <a href="#">2</a>
+                            <a href="#">3</a>
+                            <a href="#"><i class="fa fa-angle-right"></i></a>
+                        </div>
+                    </div> -->
+                    {%endfor%}
+                </div>
+              {%endif%} 
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+<!-- Shop Section End -->

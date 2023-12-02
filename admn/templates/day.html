@@ -1,0 +1,58 @@
+{% extends "admin.html" %}
+
+{% block 'content'%}
+<div class="row d-flex justify-content-center align-items-center">
+ <div class="col-lg-6 mt-5"  >
+    <canvas id="day_sale" style="background-color:rgb(224, 247, 195)"></canvas>
+ </div>
+</div> 
+
+<script>
+ document.addEventListener("DOMContentLoaded", function() {
+        var salesData = JSON.parse('{{ sales_data|safe}}');
+        var labels = [];
+        var data = [];
+        for (var i = 0; i < salesData.length; i++) {
+            var dateParts = salesData[i].date.split(' '); 
+            var day = parseInt(dateParts[1]); 
+            console.log(day)
+
+            var date = new Date(salesData[i].date);
+            // var day = date.toLocaleString('en-US', { weekday: 'long' });
+            // console.log(day);  
+            var month = date.toLocaleString('en-US', { month: 'long' });  
+            var year = date.getFullYear();  
+            var formattedDate = day + ' ' + month + ' ' + year;
+            labels.push(formattedDate);  
+            data.push(salesData[i].total_revenue);
+            
+            // console.log(formattedDate);  
+        }
+        var ctx = document.getElementById('day_sale').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Daily Sales',
+                    data: data,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(55, 142, 182, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes:[{
+
+                            ticks:{
+                                    beginAtZero: true
+                                }
+
+                        }]
+                }
+            }
+        });
+    });   
+</script>
+    {%endblock%}

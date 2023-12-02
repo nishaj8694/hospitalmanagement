@@ -1,0 +1,333 @@
+
+
+<!DOCTYPE html>
+<html lang="zxx">
+
+{% load static%}
+{% load filt%}
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Ashion Template">
+    <meta name="keywords" content="Ashion, unica, creative, html">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Ashion | Template</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Cookie&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+
+    <!-- Css Styles -->
+    <link rel="stylesheet" href="{% static 'Prod/css/Pd_bootstrap.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'Prod/css/Pd_font-awesome.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'Prod/css/Pd_elegant-icons.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'Prod/css/Pd_jquery-ui.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'Prod/css/Pd_magnific-popup.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'Prod/css/Pd_owl.carousel.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'Prod/css/Pd_slicknav.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'Prod/css/Pd_style.css' %}" type="text/css">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+</head>
+
+<body>
+    <!-- Page Preloder -->
+    <!-- <div id="preloder">
+        <div class="loader"></div>
+    </div> -->
+
+    <!-- Offcanvas Menu Begin -->
+    <div class="offcanvas-menu-overlay"></div>
+    <div class="offcanvas-menu-wrapper">
+        <div class="offcanvas__close">+</div>
+        <ul class="offcanvas__widget">
+            <li><span class="icon_search search-switch"></span></li>
+            <li><a href="#"><span class="icon_heart_alt"></span>
+                <div class="tip">2</div>
+            </a></li>
+            <li><a href="#"><span class="icon_bag_alt"></span>
+                <div class="tip">2</div>
+            </a></li>
+        </ul>
+        <div class="offcanvas__logo">
+            <!-- <a href="#"><img src="img/logo.png" alt=""></a> -->
+        </div>
+        <div id="mobile-menu-wrap"></div>
+        <div class="offcanvas__auth">
+            <a href="#">Login</a>
+            <a href="#">Register</a>
+        </div>
+    </div>
+    <!-- Offcanvas Menu End -->
+
+    <!-- Header Section Begin -->
+    <header class="header">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xl-3 col-lg-2">
+                    <div class="header__logo">
+                        <a href="#"><img src="img/logo.png" alt=""></a>
+                    </div>
+                </div>
+                <div class="col-xl-6 col-lg-7">
+                    <nav class="header__menu">
+                        <ul>
+                            <li><a href="#">PRODUCT</a></li>
+                            <li><a href="#">DOCTOR</a></li>
+                            <li class="active"><a href="./shop.html">HOME</a></li>
+                            <!-- <li><a href="#">Pages</a>
+                                <ul class="dropdown">
+                                    <li><a href="./product-details.html">Product Details</a></li>
+                                    <li><a href="./shop-cart.html">Shop Cart</a></li>
+                                    <li><a href="./checkout.html">Checkout</a></li>
+                                    <li><a href="./blog-details.html">Blog Details</a></li>
+                                </ul>
+                            </li> -->
+                            <li><a href="#">DEPARTMENT</a></li>
+                            <li><a href="#">CONTACT</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                {% if request.user.is_authenticated %}
+                <div class="col-lg-3">     
+                    <div class="header__right">   
+                    <ul class="header__right__widget">
+                        <li><a href="{% url 'home:cart' %}">cart</a></li>
+                        <li><a href="{% url 'home:signin' %}">Dashboard</a></li>  
+                        <li><a href="{% url 'home:lout' %}">Logout</a></li>
+                    </ul>
+                   </div> 
+                </div>    
+            {% else %}
+               <div class="col-lg-3"> 
+                <div class="header__right">   
+                    <ul class="header__right__widget">
+                        <li><a href="{% url 'patient:Pat_signup' %}">Register</a></li>   
+                        <li><a href="{% url 'home:signin' %}">Sign-in</a></li>
+                    </ul>
+                </div>    
+                </div>
+            {% endif %} 
+            </div>
+            <div class="canvas__open">
+                <i class="fa fa-bars"></i>
+            </div>
+        </div>
+    </header>
+    <!-- Header Section End -->
+
+    <!-- Breadcrumb Begin -->
+    <div class="breadcrumb-option">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb__links">
+                        <a href="{% url 'home:home'%}"><i class="fa fa-home"></i> Home</a>
+                        <a href="{% url 'home:checkout' %}">checkout</a>
+                        <span>address</span>
+                    </div>
+                    
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+
+    <section class="checkout spad">
+        <div class="container">
+            {% if messages %}
+       
+          
+            {% for message in messages %}
+                 {% if message.tags == 'error'%}
+                     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                     <script>
+                         var m="{{message}}";
+                         console.log(m);
+                         Swal.fire({
+                                 position: 'center',
+                                 icon: 'error',
+                                 title: m,
+                                 showConfirmButton: false,
+                                 timer: 3000
+                                 })
+                        </script>
+                        {%endif%}
+                 {% if message.tags == 'success'%}
+                        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                        <script>
+                            var m="{{message}}";
+                            console.log(m);
+                            Swal.fire({
+                                    position: 'center',
+                                    icon: 'success',
+                                    title: m,
+                                    showConfirmButton: false,
+                                    timer: 7000
+                                    })
+                           </script>
+                           {%endif%}       
+            {% endfor %}
+        {%endif%}
+
+<div class="row d-flex justify-content-center align-items-center ">    
+   <div class="col-lg-4 col-md-6 col-sm-6 col-xs-6 ">        
+    <div class="card shadow-lg bg-body rounded py-5" style="height: 350px;">
+     <h2 class="text-center d-inline">Email OTP {{id}}</h2>
+       <form action="{% url 'home:verify_email' id=id %}" method="post">
+       {% csrf_token %}
+            <div class="row justify-content-center m-5 p-0">
+              <!-- <div class="col-lg-12 col-sm-7 d-flex justify-content-center">
+                <input type="text" name="otp" class="checkout__form__input w-75">            
+              </div> -->
+              <div id="otp" class="inputs d-flex flex-row justify-content-center mt-2">
+                    <input class="m-1 text-center form-control rounded" type="text" name="first" id="first" maxlength="1" />
+                    <input class="m-1 text-center form-control rounded" type="text" name="second" id="second" maxlength="1" />
+                    <input class="m-1 text-center form-control rounded" type="text" name="third" id="third" maxlength="1" /> 
+                    <input class="m-1 text-center form-control rounded" type="text" name="fourth" id="fourth" maxlength="1" />
+                    <input class="m-1 text-center form-control rounded" type="text" name="fifth" id="fifth" maxlength="1" /> 
+                    <input class="m-1 text-center form-control rounded" type="text" name="sixth" id="sixth" maxlength="1" />
+              </div>
+              <div class="text-center w-100">
+                <button class="btn btn-primary w-100 mt-3" type="submit">verify</button>
+              </div>
+            </div>  
+
+         </form>
+       </div>
+       </div>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function(event) {
+  
+    function OTPInput() {
+    const inputs = document.querySelectorAll('#otp > *[id]');
+     for (let i = 0; i < inputs.length; i++){
+         inputs[i].addEventListener('keydown', function(event) {
+             if (event.key==="Backspace" ) {
+                 inputs[i].value='' ; if (i !==0) inputs[i - 1].focus();
+                 } 
+             else {
+                 if (i===inputs.length - 1 && inputs[i].value !=='' ) {
+                     return true; }
+                 else if (event.keyCode> 47 && event.keyCode < 58) { 
+                    inputs[i].value=event.key;
+                     if (i !==inputs.length - 1) inputs[i + 1].focus(); event.preventDefault();
+                     }
+                      else if (event.keyCode> 64 && event.keyCode < 91) {
+                         inputs[i].value=String.fromCharCode(event.keyCode);
+                          if (i !==inputs.length - 1) inputs[i + 1].focus(); event.preventDefault(); 
+                        } 
+                    }
+                });
+            }
+        }
+        OTPInput();
+    });
+</script>
+
+    </section>
+         <footer class="footer shadow-lg p-3 mt-5 bg-body rounded">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 col-sm-7">
+                        <div class="footer__about">
+                            <div class="footer__logo">
+                                <!-- <a href="./index.html"><img src="img/logo.png" alt=""></a> -->
+                            </div>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+                            cilisis.</p>
+                            <div class="footer__payment">
+                                <!-- <a href="#"><img src="img/payment/payment-1.png" alt=""></a> -->
+                                <!-- <a href="#"><img src="img/payment/payment-2.png" alt=""></a> -->
+                                <!-- <a href="#"><img src="img/payment/payment-3.png" alt=""></a> -->
+                                <!-- <a href="#"><img src="img/payment/payment-4.png" alt=""></a> -->
+                                <!-- <a href="#"><img src="img/payment/payment-5.png" alt=""></a> -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-sm-5">
+                        <div class="footer__widget">
+                            <h6>Quick links</h6>
+                            <ul>
+                                <li><a href="#">About</a></li>
+                                <li><a href="#">Blogs</a></li>
+                                <li><a href="#">Contact</a></li>
+                                <li><a href="#">FAQ</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-sm-4">
+                        <div class="footer__widget">
+                            <h6>Account</h6>
+                            <ul>
+                                <li><a href="#">My Account</a></li>
+                                <li><a href="#">Orders Tracking</a></li>
+                                <li><a href="#">Checkout</a></li>
+                                <li><a href="#">Wishlist</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-8 col-sm-8">
+                        <div class="footer__newslatter">
+                            <h6>NEWSLETTER</h6>
+                            <form action="#">
+                                <input type="text" placeholder="Email">
+                                <button type="submit" class="site-btn">Subscribe</button>
+                            </form>
+                            <div class="footer__social">
+                                <a href="#"><i class="fa fa-facebook"></i></a>
+                                <a href="#"><i class="fa fa-twitter"></i></a>
+                                <a href="#"><i class="fa fa-youtube-play"></i></a>
+                                <a href="#"><i class="fa fa-instagram"></i></a>
+                                <a href="#"><i class="fa fa-pinterest"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                        <div class="footer__copyright__text">
+                            <p>Copyright &copy; <script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a></p>
+                        </div>
+                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Footer Section End -->
+
+        <!-- Search Begin -->
+        <div class="search-model">
+            <div class="h-100 d-flex align-items-center justify-content-center">
+                <div class="search-close-switch">+</div>
+                <form class="search-model-form">
+                    <input type="text" id="search-input" placeholder="Search here.....">
+                </form>
+            </div>
+        </div>
+
+
+
+        <script src="{% static 'Prod/js/Pd_jquery-3.3.1.min.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_bootstrap.min.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_jquery.magnific-popup.min.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_jquery-ui.min.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_mixitup.min.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_jquery.countdown.min.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_jquery.slicknav.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_owl.carousel.min.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_jquery.nicescroll.min.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_main.js' %}"></script>
+    </body>
+
+    </html>    
+
+
+
+
+    

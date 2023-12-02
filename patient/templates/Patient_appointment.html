@@ -1,0 +1,40 @@
+{% extends "user-admin.html" %}
+
+
+{% block 'content' %}
+<div class="row h-100 d-flex justify-content-center py-5 overflow-y-auto">
+<div class="col-10">
+ <div class="container">
+              {%if Appointment%}
+                <div class="table-responsive">  
+                  <table class="table align-items-center table-bordered  table-flush ">
+                    <thead>
+                        <tr>
+                            <th>Appintment date</th>
+                            <th>Appointment time</th>
+                            <th>Docter</th> 
+                            <th>status</th> 
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for i in Appointment%}  
+                        <tr>
+                          <td>{{i.appointment_date}}</td>
+                          <td>{{i.appointment_time}}</td>
+                          <td>{{i.docter}}</td>
+                          <td>{{i.status}}</td>
+                        </tr>
+                      {%endfor%} 
+                      </tbody>
+                  </table>
+                </div>
+              {%else%}
+                  <div class="d-flex justify-content-center align-items-center">
+                      
+                     <h4 class="text-center">You have no Appointment</h4>    
+                  </div>        
+              {%endif%}               
+</div>
+</div>
+</div>  
+{%endblock%}

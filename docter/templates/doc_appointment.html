@@ -1,0 +1,109 @@
+{% extends "doc.html" %}
+{% block 'content'%}
+             
+{% if messages%}                  
+{% for message in messages %}
+{% if message.tags == 'error'%}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        var m="{{message}}";
+        console.log(m);
+        Swal.fire({
+                position: 'center',
+                icon: 'error',
+                title: m,
+                showConfirmButton: false,
+                timer: 4000
+                })
+       </script>
+       {%endif%}
+{% if message.tags == 'success'%}
+       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+       <script>
+           var m="{{message}}";
+           console.log(m);
+           Swal.fire({
+                   position: 'center',
+                   icon: 'success',
+                   title: m,
+                   showConfirmButton: false,
+                   timer: 4500
+                   })
+          </script>
+          {%endif%}       
+{% endfor %}
+{%endif%} 
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <div class="col-12">
+            <div class="rounded bg-transBody h-100 p-4">
+                <div class="d-flex justify-content-between">
+                    <h6 class="mb-4">APPOINTMENT LIST </h6>
+                    <h6>
+                        {% if today%}<span class="">
+                            <a href="{% url 'docter:doc_appointment' %}">All APPOINTMENT</a></span>
+                        {%else%}<span  class=""><a href="{% url 'docter:today_appointment' %}">
+                                TODAY APPOINTMENT</a></span>{%endif%}
+                    </h6> 
+                </div>
+               
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Patient Name</th>
+                                <th scope="col">Appointment Date</th>
+                                <th scope="col">Appointment Time</th>
+                                <th scope="col">Mention Reasons</th>
+                                <th scope="col">status</th>
+                                <th scope="col">Actions</th>
+                                 
+                                
+                            </tr>
+                        </thead>
+                        <tbody>  
+                          {% for i in Appointment%}
+                            <tr> 
+                                <td>{{i.patient}}</td>
+                                <td>{{i.appointment_date}}</td>
+                                <td>{{i.appointment_time}}</td>
+                                <td>{{i.reason}}</td>
+                                <td> 
+                                    {% if i.status == "reject"%}
+                                       <h6 class="text-danger">{{i.status}}</h6>
+                                    {% elif i.status == "accept"%}
+                                       <h6 class="text-success">{{i.status}}</h6>
+                                    {% elif i.status == "finish"%}
+                                        <h6 class="text-dark">{{i.status}}</h6>
+                                    {%else%}
+                                         {{i.status}}   
+                                    {%endif%}     
+                                </td>
+                                <td>{% if i.status == "finish"%}
+                                     <h6>closed</h6>
+                                    {%else%}
+                                        <div class="d-flex sm-flex-column">
+                                            <a href="{% url 'docter:appointment_status' i.id 'accept' %}"><i class="fa fa-1x fa-check-square-o" aria-hidden="true"></i></a>
+                                            <a href="{% url 'docter:appointment_status' i.id 'reject' %}"><i class="bi bi-x-square-fill  mx-2"></i></a>
+                                            <a href="{% url 'docter:appointment_status' i.id 'finish' %}"><i class="fa fa-handshake-o" aria-hidden="true"></i></a> 
+                                        </div>
+                                        
+                                    {%endif%} 
+                                </td>
+                                     
+                        
+                            </tr>    
+                          {%endfor%}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{%endblock%}
+
+<!-- <i class="bi bi-check2-circle bg-primary mx-2"></i> -->
+<!-- <i class="bi bi-shield-fill-check bg-success mx-2"></i> -->

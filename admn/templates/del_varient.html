@@ -1,0 +1,52 @@
+{% extends "admin.html" %}
+
+{%load crispy_forms_tags %} 
+
+{% block 'content'%}
+<div class="row d-flex  align-items-center justify-content-center">
+    <div class="col-xl-4 col-md-6  mb-4">
+      <div class="d-flex justify-content-center align-items-center flex-direction-row">
+        {%for i in delprod%}
+          <div class="m-2">
+                <div>
+                    <img src="{{i.image.url }}" width="200px" height="200px">
+                </div>
+                <h5>{{i.name}}</h5>
+                <h6>{{i.discription}}</h6>
+                <h6>{{i.catagory}}</h6>
+                {% if i.is_available%}
+                  <h6>Available</h6>
+                {%else%}
+                   <h6>Non Available</h6>
+                {%endif%}                                         
+          </div>
+          <div>
+                  <div>
+                      {% for j in i.item.all %}
+                        <div class="d-flex gap-5 ">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>
+                                            <h5>{{j.size}}</h5>  
+                                        </th>
+                                        <th>
+                                            <a class="btn btn-primary ml-3" href="{% url 'del_va' j.id %}">delete</a>
+                                        </th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div> 
+                      {%endfor%} 
+
+                  </div>    
+              
+             
+          </div>
+        {%endfor%}                   
+      </div>
+    </div>  
+ </div>   
+
+
+{%endblock%}

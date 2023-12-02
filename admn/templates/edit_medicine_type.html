@@ -1,0 +1,38 @@
+{% extends "admin.html" %}
+
+{%load crispy_forms_tags %} 
+
+{% block 'content'%}         
+
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="card col-5 p-5">
+            {% if messages %}
+                 {% for msg in messages%}
+             
+                     <div class="alert alert-info alert-dismissible fade show" role="alert">
+                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                             {{msg}}
+                     </div>
+                 {%endfor%}    
+             {%endif%}
+            
+             
+            <div>
+             <h5>catagory name for edit " {{cate.name}} "</h5>
+             <h1></h1>
+             <form action="{% url 'medicine_type_edit' id %}" method="post">
+                 {% csrf_token %}
+                 <div class="mb-2">
+                     <label for="#mon34" class="form-label">catagory name : </label>
+                     <input type="text" name="name" id="mon34" class="form-control">
+                 </div>
+                 <div class="d-grid ">
+                     <button class="btn btn-success btn-lg" type="submit">Submit</button>
+                 </div>
+             </form>
+           </div>
+        </div>
+    </div>
+</div>           
+{%endblock%}

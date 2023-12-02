@@ -1,0 +1,135 @@
+{% extends 'base.html'%}
+{%block 'content'%}
+    {%load crispy_forms_tags %} 
+ 
+        {% load static%}
+        
+        <!-- Google Font -->
+        <link href="https://fonts.googleapis.com/css2?family=Cookie&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script>
+        <!-- Css Styles -->
+        <link rel="stylesheet" href="{% static 'Prod/css/Pd_bootstrap.min.css' %}" type="text/css">
+        <link rel="stylesheet" href="{% static 'Prod/css/Pd_font-awesome.min.css' %}" type="text/css">
+        <link rel="stylesheet" href="{% static 'Prod/css/Pd_elegant-icons.css' %}" type="text/css">
+        <link rel="stylesheet" href="{% static 'Prod/css/Pd_jquery-ui.min.css' %}" type="text/css">
+        <link rel="stylesheet" href="{% static 'Prod/css/Pd_magnific-popup.css' %}" type="text/css">
+        <link rel="stylesheet" href="{% static 'Prod/css/Pd_owl.carousel.min.css' %}" type="text/css">
+        <link rel="stylesheet" href="{% static 'Prod/css/Pd_slicknav.min.css' %}" type="text/css">
+        <link rel="stylesheet" href="{% static 'Prod/css/Pd_style.css' %}" type="text/css">
+   
+        <!-- Header Section End -->
+    
+        <div class="container-fluid row d-flex justify-content-center align-items-center boarder-5">
+            {% if messages %}
+       
+          
+            {% for message in messages %}
+                 {% if message.tags == 'error'%}
+                     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                     <script>
+                         var m="{{message}}";
+                         console.log(m);
+                         Swal.fire({
+                                 position: 'center',
+                                 icon: 'error',
+                                 title: m,
+                                 showConfirmButton: false,
+                                 timer: 3000
+                                 })
+                        </script>
+                        {%endif%}
+                 {% if message.tags == 'success'%}
+                        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                        <script>
+                            var m="{{message}}";
+                            console.log(m);
+                            Swal.fire({
+                                    position: 'center',
+                                    icon: 'success',
+                                    title: m,
+                                    showConfirmButton: false,
+                                    timer: 7000
+                                    })
+                           </script>
+                           {%endif%}       
+            {% endfor %}
+        {%endif%}
+           <!-- <div class="card">      -->
+            <div class="row d-flex justify-content-center align-items-center mt-5 mb-5" 
+            >
+                <div class="col-lg-4 col-sm-10"  style="background-color: rgb(245, 244, 244,0.6);">
+                    <h4 class="text-center pt-3">APPOINTMENT</h4>
+                    <form action="{% url 'patient:appoiment' id=2 %}" method="post">
+                        {%csrf_token%}
+                        {{form.docter|as_crispy_field}}
+                        {{form.appointment_date|as_crispy_field}}
+                        <label for="id_appointment_time">Choose Time</label>
+                        <select name="time" id="id_appointment_time" class="form-control">
+
+                        </select>
+                        {{form.reason|as_crispy_field}}
+                        <div class=" d-flex justify-content-center align-items-center pb-3">
+                            <button type="submit" class="btn btn-primary rounded-pill w-50">submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+           <!-- </div>  -->
+        </div>            
+
+       
+        <!-- Search End -->
+        <script>
+
+
+const appointment_Date = document.getElementById("id_{{ form.appointment_date.html_name }}");
+    const appoiment_Docter = document.getElementById("id_{{ form.docter.html_name }}")
+    var appointmentTimeField = document.getElementById("id_appointment_time");            
+    let appointmentTimeSelect = null;
+   
+
+    function handleChange(event)  {
+      const selectDate = appointment_Date.value;
+      const selectDoctor = appoiment_Docter.value;
+      if (selectDate && selectDoctor){
+      appointmentTimeField.innerHTML = "";
+      appointmentTimeSelect = null;                     
+      var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/Patient/get_available_time_slots/?date=' + selectDate+ '&doctor=' + selectDoctor);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+            var response = JSON.parse(xhr.responseText);
+            var availableTimeSlots = response.time_slots;
+            console.log(availableTimeSlots);
+            for (var i = 0; i < availableTimeSlots.length; i++) {
+                var timeSlot = availableTimeSlots[i];
+                var option = document.createElement('option');
+                option.value = timeSlot;
+                option.text = timeSlot;
+                appointmentTimeField.add(option);
+            }
+            appointmentTimeSelect = appointmentTimeField;
+            }
+        };
+        xhr.send();
+        };
+      }
+        appointment_Date.addEventListener("change", handleChange);
+        appoiment_Docter.addEventListener("change", handleChange);
+
+          </script>
+        <!-- Js Plugins -->
+        <script src="{% static 'Prod/js/Pd_jquery-3.3.1.min.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_bootstrap.min.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_jquery.magnific-popup.min.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_jquery-ui.min.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_mixitup.min.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_jquery.countdown.min.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_jquery.slicknav.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_owl.carousel.min.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_jquery.nicescroll.min.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_main.js' %}"></script>  
+{%endblock%}

@@ -1,0 +1,90 @@
+{% extends "doc.html" %}
+ 
+{% block 'content' %}
+             
+{% if messages%}                  
+{% for message in messages %}
+{% if message.tags == 'error'%}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        var m="{{message}}";
+        console.log(m);
+        Swal.fire({
+                position: 'center',
+                icon: 'error',
+                title: m,
+                showConfirmButton: false,
+                timer: 4000
+                })
+       </script>
+       {%endif%}
+{% if message.tags == 'success'%}
+       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+       <script>
+           var m="{{message}}";
+           console.log(m);
+           Swal.fire({
+                   position: 'center',
+                   icon: 'success',
+                   title: m,
+                   showConfirmButton: false,
+                   timer: 4500
+                   })
+          </script>
+          {%endif%}       
+{% endfor %}
+{%endif%} 
+<div class="container-fluid pt-4 px-4 overflow-y-auto">
+    <div class="row g-4">
+        <div class="col-12">
+            <div class=" rounded h-100 p-4 bg-transBody">
+                <h6 class="mb-4">Product List</h6>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Image</th>
+                                <th scope="col">Catagory</th>
+                                <th scope="col">size </th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Available</th>
+                            </tr>
+                        </thead>
+                        <tbody>  
+                          {% for i in product%}
+                            <tr> 
+                                <td>{{i.name}}</td> 
+                                <td>
+                                    <img src="{{i.image.url}}" width="50px" height="50px">
+                                </td>     
+                                <td>{{i.catagory}}</td>
+                                {% if i.item.count > 0 %}
+                                 <td>
+                                    {% for j in i.item.all %}
+                                        {{ j.size }}<br>
+                                    {% endfor %}
+                                 </td>
+                                 <td>
+                                    {% for j in i.item.all %} 
+                                        {{j.price}}<br>
+                                    {%endfor%}
+                                 </td> 
+                                {% else %}
+                                 <td></td>
+                                 <td></td>
+                              {% endif %}
+                                <td>{{i.is_available}}</td> 
+                            </tr>
+                          {%endfor%}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{%endblock%}        
+
+

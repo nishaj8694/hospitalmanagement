@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% load static %}
+    {%load crispy_forms_tags %} 
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Dashboard - Admin</title>
+        <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+        <link href="{% static 'adm/css/adminstyles.css' %}" rel="stylesheet" />
+        <link href="{% static 'adm/css/product.css' %}" rel="stylesheet" />
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css">
+        <!-- @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css"); -->
+        <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous"> -->
+        <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script> -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+    <body class="sb-nav-fixed">
+        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+            <!-- Navbar Brand-->
+            <!-- Sidebar Toggle-->
+            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+            <a class="navbar-brand ps-3" href="{% url 'dashboard'%}">Home</a>
+            
+            <!-- Navbar Search-->
+
+            <form action="{% url 'search' %}"  method="post" class ="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+                {% csrf_token %} 
+                <div class="input-group">
+                    <input class="form-control" type="text" name="search" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
+                    <!-- <button class="btn btn-outline-success" type="submit"><i class="fas fa-search"></i></button> -->
+                    <button class="btn btn-primary"  type="submit"><i class="fas fa-search"></i></button>
+                </div>
+            </form>
+            <!-- <form class="d-flex m-5" action="{% url 'search' %}" method="post" role="search">
+                {% csrf_token %}
+               <input class="me-2 px-2 rounded border-0 outline-0" type="search" name="search" placeholder="Search" aria-label="Search">
+               <button class="btn btn-outline-success" type="submit"><i class="fas fa-search"></i></button>
+           </form> -->
+            <!-- Navbar-->
+            <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+                <a class="dropdown-item" href="{% url 'home:lout' %}">Logout</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="layoutSidenav" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{% url 'home:lout' %}">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                    <div class="sb-sidenav-menu">
+                        <div class="nav">
+                            <div class="sb-sidenav-menu-heading">USERS</div>
+                            <a class="nav-link collapsed {% if page == 'ad-user'%} active {% elif page == 'ad-Pat' %} active {%endif%}" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon "><i class="fas fa-columns"></i></div>
+                                Patient
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse {% if page == 'ad-user' %} show {% elif page == 'ad-Pat' %} show {%endif%}" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link {% if page == 'ad-Pat' %}active {%endif%}" href="{% url 'pat_up' %}">Add Patient</a>
+                                    <a class="nav-link {% if page == 'ad-user' %}active {%endif%}" href="{% url 'show_users'%}">show Patient</a>
+
+                                </nav>
+                            </div>
+                                <a class="nav-link collapsed {% if page == 'doc'%} active {% elif page == 'doc-s' %}
+                                 active {% elif page == 'depart' %} {%endif%}" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts1" aria-expanded="false" aria-controls="collapseLayouts">
+                                    <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                                    Doctor
+                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                </a>
+                                <div class="collapse {% if page == 'doc' %} show {% elif page == 'doc-s' %} show {%endif%} " id="collapseLayouts1" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                    <nav class="sb-sidenav-menu-nested nav">
+                                        <a class="nav-link {% if page == 'doc' %}active {%endif%}" href="{% url 'doc_up'%}">Add Doctor</a>
+                                        <a class="nav-link {% if page == 'doc-s' %}active {%endif%}" href="{% url 'show_doct' %}">show Doctor</a>
+                                        <a class="nav-link {% if page == 'depart' %}active {%endif%}" href="{% url 'department' %}">Department</a>
+
+                                    </nav>
+                                </div>
+                            <!-- <div class="sb-sidenav-menu-heading">Product</div> -->
+                            <a class="nav-link collapsed {% if page == 'ad-Pr'%} active {% elif page == 's-pr' %} active {% elif page == 'ad-cg'%} active{% elif page == 'ad-mg'%} active {% elif page == 'ad-cp' %} active{%endif%}" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts2" aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                                Product
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse {% if page == 'ad-Pr' %} show {% elif page == 's-pr' %} show {% elif page == 'ad-cg' %} show {% elif page == 'ad-mg' %} show{% elif page == 'ad-cp' %} show{%endif%}" id="collapseLayouts2" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link {% if page == 'ad-Pr' %}active {%endif%}" href="{% url 'ad_Product'%}">Add Product</a>
+                                    <a class="nav-link {% if page == 's-pr' %}active {%endif%}" href="{% url 'show_Product'%}">show Product</a>
+                                    <a class="nav-link {% if page == 'ad-cg' %}active {%endif%}" href="{% url 'catagory'%}">General catagory</a>
+                                    <a class="nav-link {% if page == 'ad-mg' %}active {%endif%}" href="{% url 'medicine_type'%}">medicine catagory</a>
+                                    <a class="nav-link {% if page == 'ad-cp' %}active {%endif%}" href="{% url 'coupnshow' %}">coupen</a>
+
+                                </nav>
+                            </div>
+                            <a class="nav-link collapsed {% if page == 'admn-ord'%} active {% elif page == 'ord-com' %} active  {%endif%}" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts9" aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                                order
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse {% if page == 'admn-ord' %} show {% elif page == 'ord-com' %} show {%endif%}" id="collapseLayouts9" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link {% if page == 'admn-ord' %}active {%endif%}" href="{% url 'admin_order'%}"> order</a>
+                                    <a class="nav-link {% if page == 'ord-com' %}active {%endif%}" href="{% url 'admin_c'%}">completed order</a>
+
+                                </nav>
+                            </div>
+                            <!-- <div class="sb-sidenav-menu-heading">sales</div> -->
+                            <!-- <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts6" aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                                Sales Report
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseLayouts6" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="">year</a>
+                                    <a class="nav-link" href="">month</a>
+                                </nav>
+                            </div> -->
+                            {% with resolved_view=request.resolver_match.view_name %}
+                            <a class="nav-link collapsed {% if resolved_view == 'today'%} active {%elif resolved_view == 'day'%} active{%elif resolved_view == 'month'%} active {%elif resolved_view == 'year'%} active{%elif resolved_view == 'week'%} active{% endif %}" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts5" aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                                Sales Graph
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse {% if resolved_view == 'today'%} show active {%elif resolved_view == 'day'%} show active{%elif resolved_view == 'month'%} show active {%elif resolved_view == 'year'%} show active{%elif resolved_view == 'week'%} show active{% endif %}"
+                             id="collapseLayouts5" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    
+                                    <a class="nav-link {% if resolved_view == 'day' %}active{% endif %} " href="{% url 'day' %}">All sales</a>
+                                    <a class="nav-link {% if resolved_view == 'today' %}active{% endif %}" href="{% url 'today'%}">Today</a>
+                                    <a class="nav-link {% if resolved_view == 'year' %}active{% endif %}" href="{% url 'year'%}">Year base</a>
+                                    <a class="nav-link {% if resolved_view == 'month' %}active{% endif %}" href="{% url 'month'%}">Month base</a>
+                                    <a class="nav-link {% if resolved_view == 'week' %}active{% endif %}" href="{% url 'week'%}">Current Week</a>
+                                </nav>
+                            </div>
+                            {% endwith %}
+
+                    </div>
+                    <div class="sb-sidenav-footer ">
+                        <div class="small">Logged in as:</div>
+                        {{request.user.username}}
+                    </div>
+                </nav>
+            </div>  
+            <div id="layoutSidenav_content">
+                <main class="bg-light h-100">
+                    
+                    {% block 'content' %}
+
+                    {% endblock 'content' %}
+                    <div class="container-fluid px-4">
+                                <div class="row mt-4">
+                                    {%if pat%}  
+                                        <div class="col-xl-3 col-md-6">
+                                            <div class="card bg-primary text-white mb-4">
+                                                <div class="card-body">Total Patient-{{pat.count}}</div>
+                                                <!-- <div class="card-footer d-flex align-items-center justify-content-between">
+                                                    <a class="small text-white stretched-link" href="#">View Details</a>
+                                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                                </div> -->
+                                            </div>
+                                        </div>
+                                    {%endif%}
+                                    {%if doc%} 
+                                        <div class="col-xl-3 col-md-6">
+                                            <div class="card bg-warning text-white mb-4">
+                                                <div class="card-body">Total Doctor--{{doc.count}}</div>
+                                                <!-- <div class="card-footer d-flex align-items-center justify-content-between">
+                                                    <a class="small text-white stretched-link" href="#">View Details</a>
+                                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                                </div> -->
+                                            </div>
+                                        </div>
+                                        {%endif%}
+                                        {%if prod_no%}
+                                        <div class="col-xl-3 col-md-6">
+                                            <div class="card bg-success text-white mb-4">
+                                                <div class="card-body">Total Product--{{prod_no.count}}</div>
+                                                <!-- <div class="card-footer d-flex align-items-center justify-content-between">
+                                                    <a class="small text-white stretched-link" href="#">View Details</a>
+                                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                                </div> -->
+                                            </div>
+                                        </div>
+                                        {%endif%}
+                                </div>
+                                <div class="row  d-flex justify-content-center align-items-center">
+                                    {%if sales_year %}
+                                        <div class="col-lg-5 w-50 mt-5" >
+                                            <canvas id="sales_year" style="background-color:rgb(246, 249, 248)"></canvas>
+                                        </div>
+                                    {%endif%}
+                                    {%if sales_month %}
+                                        <div class="col-lg-5 w-50 mt-5" >
+                                           <canvas id="monthly_sale" style="background-color:rgb(246, 249, 248)"></canvas>
+                                        </div>
+                                    {%endif%}
+                                    {%if sales_weak %}
+                                        <div class="col-lg-5 w-50 mt-5" >
+                                           <canvas id="sales_weak" style="background-color:rgb(246, 249, 248)"></canvas>
+                                        </div>
+                                    {%endif%}
+                                    {%if sales_today %}
+                                        <div class="col-lg-5 w-50 mt-5" >
+                                           <canvas id="sales_today" style="background-color:rgb(246, 249, 248)"></canvas>
+                                        </div>
+                                    {%endif%}
+                        
+                               </div>    
+
+                           
+                        </div>
+                         
+                      
+                </main>
+                <!-- <footer class="py-4 bg-light mt-auto">
+                    <div class="container-fluid px-4">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright &copy; Your Website 2023</div>
+                            <div>
+                                <a href="#">Privacy Policy</a>
+                                &middot;
+                                <a href="#">Terms &amp; Conditions</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer> -->
+            </div>
+        </div>
+        <script>
+                    
+                    document.addEventListener("DOMContentLoaded", function() {
+                    
+
+                    var salesMonth = JSON.parse('{{ sales_month|safe}}');
+                    console.log(salesMonth);
+                    var month_labels = [];
+                    var month_data = [];
+                    for (var i = 0; i < salesMonth.length; i++) {
+                        var date = new Date(salesMonth[i].year, salesMonth[i].month - 1);  
+                        var monthYear = date.toLocaleString('en-US', { month: 'long',}); 
+                        month_labels.push(monthYear);
+                        month_data.push(salesMonth[i].total_revenue);
+                        // labels.push(salesData[i].year + '-' + salesData[i].month);
+                        // data.push(salesData[i].total_revenue);
+                    }
+                    console.log(month_labels);
+                    console.log(month_data);
+                    var canvas = document.getElementById('monthly_sale');
+                    console.log(canvas);
+                    var ctx=canvas.getContext('2d');
+                    console.log(ctx);
+                    var chart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: month_labels,
+                            datasets: [{
+                                label: 'month Sales',
+                                data: month_data,
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(55, 142, 182, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes:[{
+
+                                        ticks:{
+                                                beginAtZero: true
+                                            }
+
+                                        }]
+                            }
+                        }
+                    });
+                    var salesYear = JSON.parse('{{ sales_year|safe}}');
+                    console.log(salesYear);
+                    var year_labels = [];
+                    var year_data = [];
+                    for (var i = 0; i < salesYear.length; i++) {
+                        var year = salesYear[i].year; 
+                        var totalRevenue = salesYear[i].total_revenue; 
+                        year_labels.push(year); 
+                        year_data.push(totalRevenue); 
+                    }
+
+                    var ctx = document.getElementById('sales_year').getContext('2d');
+                    var chart = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: year_labels,
+                            datasets: [{
+                                label: 'Yearly Sales',
+                                data: year_data,
+                                backgroundColor: ['rgba(75, 192, 192, 0.2)','rgba(45, 172, 122, 0.4)',
+                'rgba(45, 12, 22, 0.4)','rgba(134, 12, 222, 0.4)','rgba(288, 172, 122, 0.4)',],
+                                borderColor: 'rgba(55, 142, 182, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes:[{
+                                    ticks:{
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+               
+
+                    var salesWeak = JSON.parse('{{ sales_weak|safe}}');
+                    console.log('weak',salesWeak);
+                    var weak_labels = [];
+                    var weak_data = [];
+                    for (var i = 0; i < salesWeak.length; i++) {
+                        var date = new Date(salesWeak[i].date);
+                            var day = date.toLocaleString('en-US', { weekday: 'long' });  
+                            weak_labels.push(day);  
+                            weak_data.push(salesWeak[i].total_revenue);
+                    }
+                    // console.log(labels);
+                    // console.log(data);
+
+                    var ctx = document.getElementById('sales_weak').getContext('2d');
+                    var chart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: weak_labels,
+                            datasets: [{
+                                label: 'current weak Sales',
+                                data: weak_data,
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(55, 142, 182, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes:[{
+
+                                    ticks:{
+                                            beginAtZero: true
+                                    }
+
+                                }]
+                            }
+                        }
+                    });
+                    
+                    
+                    // var salesToday = JSON.parse('{{ sales_today|safe}}');
+                    // // console.log(salesData);
+                    // var today_labels = [];
+                    // var today_data = [];
+                    // for (var i = 0; i < salesToday.length; i++) {
+                    //     var date = new Date(salesToday[i].date);
+                    //         var day = date.toLocaleString('en-US', { weekday: 'long' });  
+                    //         var month = date.toLocaleString('en-US', { month: 'long' });  
+                    //         var year = date.getFullYear();  
+                    //         var formattedDate = day + ' ' + month + ' ' + year;
+                    //         today_labels.push(formattedDate);  
+                    //         today_data.push(salesToday[i].total_revenue);
+                    // }
+                    // // console.log(labels);
+                    // // console.log(data);
+
+                    // var ctx = document.getElementById('sales_today').getContext('2d');
+                    // var chart = new Chart(ctx, {
+                    //     type: 'line',
+                    //     data: {
+                    //         labels: today_labels,
+                    //         datasets: [{
+                    //             label: 'Today Sales',
+                    //             data: today_data,
+                    //             backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    //             borderColor: 'rgba(55, 142, 182, 1)',
+                    //             borderWidth: 1
+                    //         }]
+                    //     },
+                    //     options: {
+                    //         scales: {
+                    //             yAxes:[{
+
+                    //                 ticks:{
+                    //                             beginAtZero: true
+                    //                     }
+
+                    //                 }]
+                    //         }
+                    //     }
+                    // });
+
+
+                    var salesData = JSON.parse('{{ sales_today|safe}}');
+                    var labels = [];
+                    var data = [];
+                    var lab = [];
+                    for (var i = 0; i < salesData.length; i++) {
+                        var time = salesData[i].date;
+                        labels.push(time);
+                        lab.push(time);
+                        data.push(salesData[i].total_revenue);
+                    }
+                    for (var i = 1; i <= 24; i++) {
+                        var hour = i === 0 ? 12 : i;
+                        var minutes = '00';
+                        var seconds = '00';
+                        var timeStr = (hour < 10 ? '0' + hour : hour) + ':' + minutes + ':' + seconds;
+                        labels.push(timeStr);
+                        }
+                    function timeSeconds(timeStr) {
+                        var [hours, minutes, seconds] = timeStr.split(':').map(Number);
+                        return ((hours * 60 + minutes) * 60 + seconds) * 1000;
+                    }
+                    labels.sort(function(a, b) {
+                        return timeSeconds(a) - timeSeconds(b);
+                    });
+                    var k=0;
+                    var money=[]
+                    for (var i = 0; i < labels.length; i++) {
+                        if (labels[i]==lab[k]){
+                            money.push(data[k])
+                            k=k+1;
+                        }
+                        else{
+                            money.push('0')
+
+                        }
+
+                    var ctx = document.getElementById('sales_today').getContext('2d');
+                    var chart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Today Sales',
+                                data: money,
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(55, 142, 182, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes:[{
+
+                                    ticks:{
+                                                beginAtZero: true
+                                        }
+
+                                    }]
+                            }
+                        }
+                    });
+                }
+
+
+
+
+                    var salesCmonth = JSON.parse('{{ sales_cmonth|safe}}');
+                    var clabels = [];
+                    var cdata = [];
+                    for (var i = 0; i < salesCmonth.length; i++) {
+                        var dateParts = salesCmonth[i].date.split(' '); 
+                        var day = parseInt(dateParts[1]); 
+                        console.log(day)
+
+                        var date = new Date(salesCmonth[i].date);
+                        // var day = date.toLocaleString('en-US', { weekday: 'long' });
+                        // console.log(day);  
+                        // var month = date.toLocaleString('en-US', { month: 'long' });  
+                        // var year = date.getFullYear();  
+                        // var formattedDate = day + ' ' + month + ' ' + year;
+                        var formattedDate=day
+                        clabels.push(formattedDate);  
+                        cdata.push(salesCmonth[i].total_revenue);
+                        // console.log(clabels);
+                        // console.log(formattedDate);  
+                    }
+                    var ctx = document.getElementById('sales_day').getContext('2d');
+                    var chart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: clabels,
+                            datasets: [{
+                                label: 'Daily Sales',
+                                data: cdata,
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(55, 142, 182, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes:[{
+
+                                        ticks:{
+                                                beginAtZero: true
+                                            }
+
+                                    }],
+
+                                xAxes:[{
+
+                                    ticks:{
+                                            beginAtZero: true
+                                             }
+
+                                }]
+                            }
+                        }
+                    });
+
+                }); 
+          
+        </script>   
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="{% static 'adm/js/mysales.js' %}"></script>
+        <script src="{% static 'adm/js/scripts.js' %}"></script>
+        <script type="text/javascript" src="{% static 'Prod/js/disable.js' %}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+        <script src="{% static 'adm/assets/demo/chart-area-demo.js' %}"></script>
+        <script src="{% static 'adm/assets/demo/chart-bar-demo.js' %}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
+        <script src="{% static 'adm/js/datatables-simple-demo.js' %}"></script>
+    </body>
+</html>

@@ -1,0 +1,227 @@
+{% extends "admin.html"%}
+{% load static %}
+{%block 'content'%}
+<head>
+    <link href="{% static 'adm\css\tabl.css' %}" rel="stylesheet" />
+</head>
+
+
+                <div class="container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>order no</th>
+                                <th>order date</th>
+                                <th>user</th>
+                                <th>Product</th>
+                                <th>Price</th>				
+                                <th>Payment</th>
+                                <th class="pt-4">status 
+                                    <div class="dropdown d-inline float-end">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                          <!-- <i class="fa fa-bars" aria-hidden="true" style="float: right;"></i> -->
+                                          
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                          <li><a class="dropdown-item" href="{% url 'admin_order'%}">AllorderAction</a></li>
+                                          <li><a class="dropdown-item" href="{% url 'admin_order_specific'%}">orderAction</a></li>
+                                          <li><a class="dropdown-item" href="{% url 'admin_order_refund'%}">RefundAction</a></li>
+                                        </ul>
+                                      </div>    
+
+                                   
+                                </th>
+                                <!-- <th></th> -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for order in order_list%}  
+                            <tr>
+                                <td>{{order.id}}</td>
+                                <td>{{order.order_date.date}}</td>
+                                <td>{{order.user}}</td>
+                                <td>
+                                    {% for j in order.order_items.all%}              
+                                        {{j.product}}
+                                    {%endfor%}
+                                </td>
+                                <td>{{order.Total_Price}}</td>
+                                <td>{{order.Pay_option}}</td>
+                                <td id="act{{order.id}}">
+                                   {% if order.status != "cancel" and order.status != "deliverd" %}
+                                       <div class="btn bg-body border border-info">Ordered Action
+
+                                                <select class="order-select btn btn-light mx-1 border border-black" id="ord_status_{{order.id}}" val="{{order.id}}">
+                                                    
+                                                    {% if order.status == "pending"%}
+                                                                <option>pending</option>
+                                                                <option>shiped</option>
+                                                                <option>deliverd</option>
+                                                                <option>revoke</option>   
+                                                    {% elif order.status == "shiped"%}
+                                                                <option>shiped</option>
+                                                                <option>pending</option>
+                                                                <option>deliverd</option>
+                                                                <option>revoke</option>
+                                                    {%endif%}          
+                                                </select>
+                                       </div>
+
+                                    {%else%}
+                                            {% if order.order_refund.all %}
+                                                {% for j in order.order_refund.all%}              
+                                                        {% if j.status == "completed" %}
+                                                                <button class="btn btn-primary">canceled / Refund completed</button>
+
+                                                        {% else %}
+                                                            <div class="btn bg-body border border-warning">Return Action
+                                                                <select class="Refund-select  btn btn-light border border-black" id="refund_status_{{j.id}}" val="{{j.id}}">
+                                                                    {% if j.status == "pending" %}   
+                                                                        <option>pending</option>
+                                                                        <option>Process</option>
+                                                                        <option>completed</option>
+                                                                        <option>cancel</option>
+                                                                    {% elif j.status == "Process" %}   
+                                                                        <option>Process</option>
+                                                                        <option>pending</option>
+                                                                        <option>completed</option>
+                                                                        <option>cancel</option>    
+                                                                    {% elif j.status == "cancel" %}   
+                                                                        <option>cancel</option>          
+                                                                        <option>Process</option>
+                                                                        <option>pending</option>
+                                                                        <option>completed</option>
+                                                                    {%endif%}      
+                                                                </select>   
+                                                            </div>         
+                                                        {%endif%}    
+                                                    {%endfor%}
+                                           {%else%}
+                                                  {%if order.status == "cancel"%}
+                                                       <button class="btn btn-danger">Order canceled</button>                        
+                                                  {%endif%}
+                                         {%endif%}       
+                                    {%endif%}
+                                </td>
+                            {%endfor%}   
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+     
+                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+                <script>
+                $(document).ready(function() {
+                    function getCookie(name) {
+                    var cookieValue = null;
+                    if (document.cookie && document.cookie !== '') {
+                        var cookies = document.cookie.split(';');
+                        for (var i = 0; i < cookies.length; i++) {
+                            var cookie = cookies[i].trim();
+                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
+                }
+
+                // Add the CSRF token to the AJAX request data
+                function csrfSafeMethod(method) {
+                    // these HTTP methods do not require CSRF protection
+                    return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+                }
+
+                $.ajaxSetup({
+                    beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+                    }
+                    }
+                });
+                      
+                    $('select.order-select').on('change', function() {
+                        var orderId = $(this).attr('id').replace('ord_status_', '');
+                        var status = $(this).val();
+                        console.log( orderId);
+                        console.log(status);
+                        swal({
+                            title: "Are you sure?",
+                            text: "Do you want to change the Order status?",
+                            icon: "warning",
+                            buttons: true,
+                            dangerMode: true,
+                        })
+                        .then((orderchange) => {
+                            if (orderchange) {
+                        
+                                $.ajax({
+                                    url:'/adm/orderstatus',
+                                    method: 'POST', 
+                                    data:{id:orderId ,status:status},
+                                    success:function(response){
+                                        // $('#act' + orderId).load(location.href + ' #act' + orderId + ' > *');
+                                        location.reload();
+                                        console.log('success')   
+                                        },
+                                    error:function(response){
+                                        console.log('lost');
+                                    }
+                                    });
+                              }
+                            else{
+                                $(`#ord_status_${orderId}`).load(location.href + ` #ord_status_${orderId} > option `,function(){
+                                $(`#ord_status_${orderId}`).prop('selectedIndex', 0)
+                            });
+        
+                                return false
+                            }  
+                        });    
+
+                    });
+
+                    $('select.Refund-select').on('change', function() {
+                        var orderId = $(this).attr('id').replace('refund_status_', '');
+                        var status = $(this).val();
+                        console.log( orderId);
+                        console.log(status);
+                        swal({
+                            title: "Are you sure?",
+                            text: "Do you want to change the refund status?",
+                            icon: "warning",
+                            buttons: true,
+                            dangerMode: true,
+                        })
+                        .then((refundchange) => {
+                            if (refundchange) {
+                                    $.ajax({
+                                    url:'/adm/refundstatus',
+                                    method: 'POST', 
+                                    data:{id:orderId ,status:status},
+                                    success:function(response){
+                                        location.reload();
+                                        $('#act' + orderId).load(location.href + ' #act' + orderId + ' > *');
+                                 
+
+                                        console.log('success')   
+                                        },
+                                    error:function(response){
+                                        console.log('lost');
+                                    }
+                                 });
+                               } 
+                            else{
+                                $(`#refund_status_${orderId}`).load(location.href + ` #refund_status_${orderId} > option `,function(){
+                                $(`#refund_status_${orderId}`).prop('selectedIndex', 0)
+                               }) 
+                                 return false;
+                            }
+                        });
+                       
+                    });
+                });
+                </script>
+                
+{%endblock%}

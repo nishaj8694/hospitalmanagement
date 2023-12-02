@@ -1,0 +1,246 @@
+:root {
+  --transBody-color: rgb(255, 255, 255,0.2);
+}
+
+.bg-transBody {
+  background-color: var(--transBody-color);
+}
+body {
+  height: 100vh;
+  width: 100%;
+  background-image: url("Doc-Pat.png");
+  background-size: cover; 
+  background-repeat: no-repeat;
+}
+.Patienthead{
+  background-color:rgb(255, 255, 255,0.1);
+  height: 9%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 5px 5px 5px rgba(255, 255, 255, 0.2);
+  box-shadow: 2px 2px 10px 5px rgba(255, 254, 254, 0.2);  
+}
+#adminimage{
+  background-color:transparent;
+  width:150px;
+  height:40px; 
+  border-radius:5px ;
+}
+.adminimg1{
+  display: inline;
+}
+.adminimg2{
+  display: none;
+}
+.Patienthead>.Right{
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+} 
+#headerarrow{
+  cursor:pointer;
+  background-color: transparent;
+  margin-left: 5px;
+  display: none;
+}  
+i.bi-person-square{
+  font-size: 35px;
+}
+a{
+  color: white;
+  text-decoration: none;
+}
+.headsearch{
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  display: inline;
+}
+.headsearch>input[type=search]{
+  width: 400px;
+}
+.headsearchbtn{
+  position: absolute;
+  right: 8px;
+  top:4px;
+}
+.adminbody{
+  height: 91%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}  
+
+.admincontent{
+  height: 100%;
+  width: 80%;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: transparent rgba(0, 0, 0, 0.3);
+
+}
+.admincontent::-webkit-scrollbar {
+  width: 12px; 
+}
+.sidenav {
+    height: 100%;
+    width: 20%;
+    /* position: fixed; */
+    /* z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #111;
+     overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;  */
+    background-color:rgba(243, 243, 243, 0.1);
+    box-shadow: 5px 5px 5px rgba(255, 255, 255, 0.2);
+    /* box-shadow: inset 2px 2px 5px rgba(253, 253, 253, 0.5); */
+    /* box-shadow: 2px 2px 10px 5px rgba(255, 254, 254, 0.2);  */
+  }
+  
+  .sidenav a {
+    padding: 8px 8px 8px 8px;
+    text-decoration: none;
+    font-size: 17px;
+    color:white;
+    display: block;
+    transition: 0.2s;
+  }
+  
+  .sidenav a:hover {
+    color: #f1f1f1;
+  }
+  
+  .sidenav .closebtn {
+    display: none
+  }
+  .sidenav-footer{
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 0.75rem 0.1rem 0.75rem 0.5rem ;
+    color: #f1f1f1;
+    /* position:absolute; */
+    /* bottom: 6%; */
+    width: 100%;
+  }
+  .form-switch .form-check-input {
+    width: 4em;
+    height: 1.5em;
+    margin-left: 0px;
+    
+  }
+  .menufooter{
+    
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    /* display: flex; */
+    width: 20%;
+
+  }
+  .form-available{
+    /* position: absolute; */
+    /* bottom: 10px; */
+    /* right: 10px; */
+  }
+  .searchNavigation{
+    display: none;
+  }
+  .sidebar-header{
+    list-style: none;
+    color: rgb(12, 10, 10);
+    font-size: larger;
+    margin-bottom: 5px;
+    margin-left: 5px;
+    visibility: hidden;
+  }
+@media screen and (max-width: 568px){
+    .sidenav {padding-top: 15px;
+    }
+    .sidenav a {font-size: 18px;}
+    #headerarrow{
+    display: inline;
+  }
+  .headsearch{
+    display: none;
+  }
+  #adminimage{
+    width:45px; 
+    border-radius:10px ;
+  }
+  .adminimg1{
+    display: none;
+  }
+  .adminimg2{
+    display: inline;
+  }
+  .sidenav .closebtn {
+    display: inline;
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+   
+  }
+  .sidenav .homebtn {
+    visibility: visible;
+    position: absolute;
+    top: 15px;
+    left: 30px;
+    font-size: 25px;
+    margin-left: 0px;
+  }
+  .sidenav {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color:rgb(1 56 99);
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 80px;
+  }
+  .admincontent{
+    height: 100;
+    width: 100%;
+  }
+  .menufooter{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    /* display: flex; */
+    width: 100%;
+
+  }
+  /* .form-available{
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+  } */
+  .searchNavigation{
+    display: inline;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    margin-right: 10px;
+  }
+  .searchNavigation>input[type=search]{
+    width: 100;
+  
+  }
+  .searchNavigationbtn{
+    position: absolute;
+    right: 8px;
+    top:4px;
+  }
+  .sidebar-header{
+    visibility:visible;
+  }
+}
+

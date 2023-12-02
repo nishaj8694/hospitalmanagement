@@ -1,0 +1,338 @@
+{% extends "base.html" %}
+{% block 'content' %}
+    {%load crispy_forms_tags %}
+    {% load static %} 
+    {% load filt %}    
+    <link rel="stylesheet" href="{% static 'Prod/css/Pd_bootstrap.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'Prod/css/Pd_font-awesome.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'Prod/css/Pd_elegant-icons.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'Prod/css/Pd_jquery-ui.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'Prod/css/Pd_magnific-popup.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'Prod/css/Pd_owl.carousel.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'Prod/css/Pd_slicknav.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'Prod/css/Pd_style.css' %}" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>   
+    <style>
+                .qnt {
+            float: left;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .qnt>span {
+            font-size: 14px;
+            color: #111111;
+            font-weight: 600;
+            float: left;
+            margin-top: 14px;
+            margin-right: 15px;
+        }
+            .P_Quanty {
+            height: 50px;
+            width: 150px;
+            border: 1px solid #ebebeb;
+            border-radius: 50px;
+            padding: 0 20px;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .P_Quanty .qbtn {
+            font-size: 14px;
+            color: #666666;
+            cursor: pointer;
+            float: left;
+            width: 12px;
+            line-height: 46px;
+        }
+
+        .P_Quanty input {
+            font-size: 14px;
+            color: #666666;
+            font-weight: 500;
+            border: none;
+            float: left;
+            width: 84px;
+            text-align: center;
+            height: 48px;
+        }
+    </style>
+
+
+    <!-- Breadcrumb Begin -->
+    <div class="breadcrumb-option">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb__links">
+                        <a href=""><i class="fa fa-home"></i> Home</a>
+                        <a href="#">Product </a>
+                        <span>Medicine</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+
+    <!-- Product Details Section Begin -->
+    <section class="product-details spad">
+        <div class="container">
+          {%if product %}
+            <div class="row">
+            {% for i in product %}
+                    <div class="col-lg-6">
+                        <div class="product__details__pic">
+                            <div class="product__details__pic__left product__thumb nice-scroll">
+                                <a class="pt active" href="#product-1">
+                                    <img src="{{i.image.url}}" alt="">
+                                </a>
+                                <a class="pt" href="#product-2">
+                                    <img src="{{i.image.url}}" alt="">
+                                </a>
+                                <a class="pt" href="#product-3">
+                                    <img src="{{i.image.url}}" alt="">
+                                </a>
+                                <a class="pt" href="#product-4">
+                                    <img src="{{i.image.url}}" alt="">
+                                </a>
+                            </div>
+                            <div class="product__details__slider__content">
+                                <div class="product__details__pic__slider owl-carousel">
+                                    <img data-hash="product-1" class="product__big__img" src="{{i.image.url}}" alt="">
+                                    <img data-hash="product-2" class="product__big__img" src="{{i.image.url}}" alt="">
+                                    <img data-hash="product-3" class="product__big__img" src="{{i.image.url}}" alt="">
+                                    <img data-hash="product-4" class="product__big__img" src="{{i.image.url}}" alt="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                      <form  action="{% url 'home:add_cart' i.id %}" method="post">
+                        {%csrf_token%} 
+                       
+                        <div class="product__details__text">
+                            <h3>{{i.name}}<span></span></h3>
+                            <div class="rating">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <span>( 138 reviews )</span>
+                            </div>
+                            <h5 >$<span   id="selected-Price"></span></h5>
+                            <input type="hidden" value="" id="price" name="price">
+                        <!-- $<div class="product__details__price" id="selected-Price"><span></span></div> -->
+                            <p>Nemo enim ipsam voluptatem quia aspernatur aut odit aut loret fugit, sed quia consequuntur
+                                magni lores eos qui ratione voluptatem sequi nesciunt.</p>
+                            <div class="product__details__button">
+                               <div class="qnt"> 
+                                  <span>Quantity:</span>
+                                  <div class="P_Quanty ">
+                                     <input type="text" class="form-control" id="qtvl" name="qty" value="1" readonly>
+                                     
+                                  </div>     
+                               </div>
+                               
+                                 <!-- <div class="qbtn input-group-append">
+                                        <a href="" class=" " ><i class="fa fa-plus"></i></a>
+                                     </div> -->
+
+                                 <!-- <div class="qbtn input-group-prepend ">
+                                         <a href="" class=" " ><i class="fa fa-minus"></i></a>
+                                     </div> -->
+
+
+                                <!-- <div class="quantity">
+                                    <span>Quantity:</span>
+                                    <div class="pro-qty">
+                                        <input type="text" name="qty"  value="1" disabled>
+                                    </div>
+                                </div> -->
+                                <button class="cart-btn  border-0" type="submit" name="action" value="cart">add to cart</button>
+                                <button class="cart-btn border-0" type="submit" name="action" value="buy">Buy</button>
+                            <!-- <ul>
+                                <li><a href="#"><span class="icon_heart_alt"></span></a></li>
+                                <li><a href="#"><span class="icon_adjust-horiz"></span></a></li>
+                            </ul> -->
+                            </div>
+                            <div class="product__details__widget">
+                                <ul>
+                                    <li>
+                                        <span>Availability:</span>
+                                        {% if i.is_available%}
+                                            <div class="stock__checkbox">
+                                                <label for="stockin">
+                                                    In Stock
+                                                    <input type="checkbox" id="stockin" checked>
+                                                    <span class="checkmark"></span>
+                                                </label>
+                                            </div>
+                                        {% else%} 
+                                            <div class="stock__checkbox">
+                                                <label for="stockin">
+                                                    Out of Stock
+                                                    <input type="checkbox" id="stockin">
+                                                    <span class="checkmark"></span>
+                                                </label>
+                                            </div>  
+                                        {%endif%}     
+                                    </li>
+                               
+                                    <li>
+                                        <span>Available size:</span>
+                                        <div class="size__btn">
+                                         
+                                            {% for j in  i.item.all%}
+                                                {%if j.stock == 0 %}
+                                                   <p class="text-danger d-inline mx-2">out of stock({{j.size}})</p>
+                                                {%else%}
+                                                    <input type="radio" name="size" id="sz{{j.id}}" value="{{j.price}}" {% if forloop.first %}checked{% endif %} required>
+                                                    <label for="sz{{j.id}}">{{j.size}}</label>
+                                                    <input type="hidden" name="item" value="{{j.id}}">  
+                                               {%endif%}
+                                                <!-- {% with variant_name=j.size %}
+                                                  {% if variant_name|endswith:"500gm" %}
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="size" id="inlineRadio1" value="{{j.price}}" {% if forloop.first %}checked{% endif %}>
+                                                        <label class="form-check-label" for="inlineRadio1">500mg</label>
+                                                        <input type="hidden" name="sz" value="{{j.size}}"> 
+                                                    </div>
+                                                  {%endif%}
+                                                  {% if variant_name|endswith:"650gm" %}
+                                                    <div class="form-check form-check-inline">
+                                                         <input class="form-check-input" type="radio" name="size" id="inlineRadio2" value="{{j.price}}" {% if forloop.first %}checked{% endif %}>
+                                                        <label class="form-check-label" for="inlineRadio2">650gm</label>
+                                                        <input type="hidden" name="sz" value="{{j.size}}"> 
+
+                                                    </div>
+                                                  {%endif%} 
+                                                  {% if variant_name|endswith:"1200gm" %}
+                                                      <div class="form-check form-check-inline">
+                                                            <input class="form-check-input" type="radio" name="size" id="inlineRadio3" value="{{j.price}}" {% if forloop.first %}checked{% endif %}>
+                                                            <label class="form-check-label" for="inlineRadio3">1200mg</label>
+                                                            <input type="hidden" name="sz" value="{{j.size}}"> 
+
+                                                      </div>
+                                                  {%endif%}    
+                                                {% endwith %} -->
+                                                                                                
+                                            <!-- <div class="price">{{i.item.first.price}}<span class="me-1">$</span></div> -->
+                                            <!-- <span class="me-1">$</span> -->
+                                            {%endfor%}
+                                       
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <span>Promotions:</span>
+                                        <p>Free shipping</p>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                      </form>  
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="product__details__tab">
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="tab" href="#tabs-1" role="tab">Description</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#tabs-2" role="tab">Specification</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#tabs-3" role="tab">Reviews ( 2 )</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="tabs-1" role="tabpanel">
+                                    <h6>Description</h6>
+                                    <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut loret fugit, sed
+                                        quia consequuntur s eos qui ratione voluptatem sequi nesciunt. Nulla
+                                        consequat massa quis enim.</p>
+                                    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget
+                                        . Donec quam felis, ultricies nec, pellentesque eu, pretium
+                                        quis, sem.</p>
+                                </div>
+                                <div class="tab-pane" id="tabs-2" role="tabpanel">
+                                    <h6>Specification</h6>
+                                    <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut loret fugit, sed
+                                        quia consequuntur eos qui ratione voluptatem sequi nesciunt. Nulla
+                                        consequat massa quis enim.</p>
+                                    <p>Lorem ipsum dolor Donec quam felis, ultricies nec, pellentesque eu, pretium
+                                        quis, sem.</p>
+                                </div>
+                                <div class="tab-pane" id="tabs-3" role="tabpanel">
+                                    <h6>Reviews ( 2 )</h6>
+                                    <p>Nemo enim ipsam  eos qui ratione voluptatem sequi nesciunt. Nulla
+                                        consequat massa quis enim.</p>
+                                    <p>Lorem ipsum dolor  Donec quam felis, ultricies nec, pellentesque eu, pretium
+                                        quis, sem.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <!-- </form>   -->
+              {%endfor%}  
+            </div>
+          {%endif%}  
+           
+    
+    <!-- Search End -->
+    <script>  
+ 
+                var Qt = $('.P_Quanty');
+                Qt.prepend('<span class="dec qbtn">-</span>');
+                Qt.append('<span class="inc qbtn">+</span>');
+
+                $(document).ready(function() {
+                    $(document).on('click', '.qbtn', function() {
+                        var $button = $(this);
+                        var oldValue = $button.parent().find('input').val();
+
+                        if ($button.hasClass('inc')) {
+                            var newVal = parseFloat(oldValue) + 1;
+                            console.log(newVal);
+                        } else if ($button.hasClass('dec')) { 
+                            
+                            if (oldValue > 1) {
+                                var newVal = parseFloat(oldValue) - 1;
+                            } else {
+                                newVal = 1;
+                            }
+                        }
+                        $button.parent().find('input').val(newVal);
+                    });
+                });
+
+
+           
+                   
+                $(document).ready(function(){
+                        var selectedValue = $('input[type=radio][name=size]:checked').val();
+                        $('#selected-Price').text(selectedValue);
+                        $('#price').val(selectedValue)  
+
+                        $('input[type=radio][name=size]').change(function() {
+                        var selectedValue = $('input[type=radio][name=size]:checked').val();
+                        console.log(selectedValue)
+                        $('#selected-Price').text(selectedValue);
+                        $('#price').val(selectedValue)
+                    });
+                    });
+            </script> 
+            <script src="{% static 'Prod/js/Pd_jquery-3.3.1.min.js' %}"></script>
+            <script src="{% static 'Prod/js/Pd_bootstrap.min.js' %}"></script>
+            <script src="{% static 'Prod/js/Pd_jquery.magnific-popup.min.js' %}"></script>
+            <script src="{% static 'Prod/js/Pd_jquery-ui.min.js' %}"></script>
+            <script src="{% static 'Prod/js/Pd_mixitup.min.js' %}"></script>
+            <script src="{% static 'Prod/js/Pd_jquery.countdown.min.js' %}"></script>
+            <script src="{% static 'Prod/js/Pd_jquery.slicknav.js' %}"></script>
+            <script src="{% static 'Prod/js/Pd_owl.carousel.min.js' %}"></script>
+            <script src="{% static 'Prod/js/Pd_jquery.nicescroll.min.js' %}"></script>
+            <script src="{% static 'Prod/js/Pd_main.js' %}"></script>
+    <!-- Js Plugins -->
+    
+{%endblock%}

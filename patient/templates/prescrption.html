@@ -1,0 +1,86 @@
+{% extends "user-admin.html" %}
+
+
+{% block 'content' %}
+<div class="container">
+  {% if messages %}
+  {% for message in messages %}
+                 {% if message.tags == 'error'%}
+                     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                     <script>
+                         var m="{{message}}";
+                         console.log(m);
+                         Swal.fire({
+                                 position: 'center',
+                                 icon: 'error',
+                                 title: m,
+                                 showConfirmButton: false,
+                                 timer: 3000
+                                 })
+                        </script>
+                        {%endif%}
+                 {% if message.tags == 'success'%}
+                        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                        <script>
+                            var m="{{message}}";
+                            console.log(m);
+                            Swal.fire({
+                                    position: 'center',
+                                    icon: 'success',
+                                    title: m,
+                                    showConfirmButton: false,
+                                    timer: 7000
+                                    })
+                           </script>
+                           {%endif%}       
+            {% endfor %}
+        {%endif%} 
+  <div class="row d-flex justify-content-center align-items-center">
+    <div class="col-lg-8 col-xl-10 col-sm-12 col-xs-12">
+          <div class="table-responsive ">  
+              <table class="table table-flush table-bordered  mt-5 text-center">
+                  <thead>
+                    <tr>
+                      <th scope="col">Symptoms</th>
+                      <th scope="col">Doctor</th>
+                      <th scope="col">Medicine</th>
+                      <th scope="col">Quantity</th>
+                      <th scope="col">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for i in list %}
+                      <tr>
+                        <td>{{ i.symtems }}</td>
+                        <td>{{ i.appointment.docter }}1</td>
+                        {% if i.treat.count > 0 %}
+                          <td>
+                            {% for j in i.treat.all %}
+                              {{ j.medicine }}<br>
+                            {% endfor %}
+                          </td>
+                          <td>
+                            {% for j in i.treat.all %}
+                              {{ j.quantity }}<br>
+                            {% endfor %}
+                          </td>
+                        {% else %}
+                          <td></td>
+                          <td></td>
+                        {% endif %}
+                        <td>
+                          {%if not i.ordstatus%}
+                            <a href="{% url 'patient:check' i.id %}" type="submit" name=" docter" class="btn btn-ligth">order</button>
+                          {%else%}
+                             <h6 class="btn">completed</h6>
+                          {%endif%}     
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>      
+              </table>
+          </div>
+    </div>
+  </div>
+</div>          
+{%endblock%}

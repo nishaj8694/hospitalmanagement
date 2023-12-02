@@ -1,0 +1,75 @@
+{% extends "admin.html" %}
+
+{% block 'content'%}
+<div class="row d-flex justify-content-center align-items-center">
+    <div class="col-lg-10 mt-5" >
+        <canvas id="monthly_sale" style="background-color:rgb(246, 249, 248)"></canvas>
+     </div>
+</div> 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var salesData = JSON.parse('{{ sales_data|safe}}');
+        var labels = [];
+        var data = [];
+        var lab = [];
+        for (var i = 0; i < salesData.length; i++) {
+            var time = salesData[i].date;
+            labels.push(time);
+            lab.push(time);
+            data.push(salesData[i].total_revenue);
+        }
+        for (var i = 1; i <= 24; i++) {
+            var hour = i === 0 ? 12 : i;
+            var minutes = '00';
+            var seconds = '00';
+            var timeStr = (hour < 10 ? '0' + hour : hour) + ':' + minutes + ':' + seconds;
+            labels.push(timeStr);
+            }
+        function timeSeconds(timeStr) {
+            var [hours, minutes, seconds] = timeStr.split(':').map(Number);
+            return ((hours * 60 + minutes) * 60 + seconds) * 1000;
+        }
+        labels.sort(function(a, b) {
+            return timeSeconds(a) - timeSeconds(b);
+        });
+        var k=0;
+        var money=[]
+        for (var i = 0; i < labels.length; i++) {
+            if (labels[i]==lab[k]){
+                money.push(data[k])
+                k=k+1;
+            }
+            else{
+                money.push('0')
+
+            }
+
+        var ctx = document.getElementById('monthly_sale').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Today Sales',
+                    data: money,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(55, 142, 182, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes:[{
+
+                        ticks:{
+                                    beginAtZero: true
+                            }
+
+                        }]
+                }
+            }
+        });
+    }
+ }); 
+</script>
+{%endblock%}

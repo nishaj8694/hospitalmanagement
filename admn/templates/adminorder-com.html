@@ -1,0 +1,59 @@
+{% extends "admin.html"%}
+{% load static%}
+{%block 'content'%}
+
+<head>
+    <link href="{% static 'adm\css\tabl.css' %}" rel="stylesheet" />
+</head>
+
+
+                <div class="container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>order no</th>
+                                <th>order date</th>
+                                <th>user</th>
+                                <th>Product</th>
+                                <th>Price</th>				
+                                <th>Payment</th>
+                                <th>status </th>
+                                <th>
+                                    <i class="fa fa-bars" aria-hidden="true" style="float: right;"></i>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for order in order_list%}  
+                            <tr>
+                                <td>{{order.id}}</td>
+                                <td>{{order.order_date.date}}</td>
+                                <td>{{order.user}}</td>
+                                <td>
+                                    {% for j in order.order_items.all%}              
+                                        {{j.product}}
+                                    {%endfor%}
+                                </td>
+                                <td>{{order.Total_Price}}</td>
+                                <td>{{order.Pay_option}}</td>
+                                <td>{{order.status}}</td>
+                                {% if order.status != "cancel" %}
+                                  <td><a href="{% url 'order_summery' order.id %}" class="btn btn-light border border-black">Invoice</a></td>
+                                {%else%}
+                                    {% if order.order_refund.all %}
+                                        {% for j in order.order_refund.all%}              
+                                        <td><button class="btn btn-primary">{{j.status}}</button></td>
+                                        {%endfor%}
+                                    {%else%} 
+                                        <td><button class="btn btn-primary">completed</button></td>
+                                    {%endif%} 
+
+                                {%endif%} 
+                            {%endfor%}   
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+     
+
+{%endblock%}

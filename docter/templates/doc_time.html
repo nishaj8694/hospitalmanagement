@@ -1,0 +1,64 @@
+
+{% extends "doc.html" %}
+{% block 'content'%}
+             
+{% if messages%}                  
+{% for message in messages %}
+{% if message.tags == 'error'%}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        var m="{{message}}";
+        console.log(m);
+        Swal.fire({
+                position: 'center',
+                icon: 'error',
+                title: m,
+                showConfirmButton: false,
+                timer: 4000
+                })
+       </script>
+       {%endif%}
+{% if message.tags == 'success'%}
+       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+       <script>
+           var m="{{message}}";
+           console.log(m);
+           Swal.fire({
+                   position: 'center',
+                   icon: 'success',
+                   title: m,
+                   showConfirmButton: false,
+                   timer: 4500
+                   })
+          </script>
+          {%endif%}       
+{% endfor %}
+{%endif%} 
+
+<div class="row d-flex justify-content-center align-items-center">
+    <div class="col-lg-6 col-md-6 col-sm-10 col-xs-12 ">
+    <form action="{% url 'docter:changeTime'%}" method="post">{%csrf_token%}
+        <div class="card d-flex justify-content-center align-items-center m-5 pb-5 bg-transBody">
+            <h5 class="text-center mt-5">Consultation time</h5>    
+            <label for="start_id">Starting Time({{docter.consult_start|time:"H:i"}})</label>
+            <select name="start_time" id="start_id" class=" btn bg-transBody btn-outline-secondary mx-2 mb-2 w-50">
+                {% for option in start %}
+                    <option value="{{ option.0 }}" class="bg-transBody">{{ option.1 }}</option>
+                {% endfor %}
+            </select>
+        <!-- </div> -->
+        <!-- <div>     -->
+            <label for="end_id">Ending Time({{docter.consult_end|time:"H:i"}})</label>
+            <select name="end_time" id="end_id" class=" btn bg-transBody btn-outline-secondary mx-2 mb-2 w-50">
+                {% for option in end%}
+                    <option value="{{ option.0 }}"  class="bg-transBody">{{ option.1 }}</option>
+                {% endfor %}
+            </select>
+        <!-- </div> -->
+        <!-- <div> -->
+            <button class="btn bg-transBody btn-outline-success m-2 w-50" type="submit">submit</button>  
+        </div>
+    </form>
+  
+</div>
+{%endblock%}

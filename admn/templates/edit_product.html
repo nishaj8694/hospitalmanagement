@@ -1,0 +1,47 @@
+{% extends "admin.html"%}
+{%load crispy_forms_tags %} 
+{%block 'content'%}
+
+            <h3 class="mt-4">Edit Medicine</h3>
+                            <div class="row d-flex  align-items-center justify-content-center">
+                                <div class="col-xl-4 col-md-6  mb-4">
+                                    <form action="{% url 'edit_prod' detaile.id %}" method="post"  enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        {{edit_form|crispy}}
+                                        <button class="btn btn-primary mt-2" type="submit">submit</button>
+                                    </form>
+                                </div>
+                            </div>     
+                            
+                            
+            <script>
+                                $(document).ready(function() {
+                         $('#id_category').change(function() {
+                             var category_id = $(this).val();     
+                             if (category_id ) {
+                                 $.ajax({
+                                     url: '/adm/get_subcategories/',
+                                     data: {
+                                         category_id: category_id
+                                     },
+                                     success: function(data) {
+                                         $('#id_subcategory').empty();
+                                         $('#id_subcategory').append($('<option>').text('---------').attr('value', ''));
+                                         if (data.length > 0) {
+                                             var subcategorySelect = $('<select>').attr('id', 'id_subcategory2').attr('name', 'subcategory');
+                                             subcategorySelect.append($('<option>').text('---------').attr('value', ''));
+                                             $.each(data, function(i, obj) {
+                                                 console.log(obj.name, obj.id);
+                                                 subcategorySelect.append($('<option>').text(obj.name).attr('value', obj.id));
+                                             });
+                                             console.log(subcategorySelect.val());
+                                             $('#id_subcategory').after(subcategorySelect);
+                                         }
+                                     }
+                                 });
+                             }
+                         });
+                     });
+            </script>
+                                    
+{%endblock%}                            

@@ -1,0 +1,24 @@
+{% extends "user-admin.html" %}
+
+{%load crispy_forms_tags %} 
+
+{% block 'content' %}
+
+               <div class="container row h-100 w-100 my-3">
+
+                <div class="col-lg-6 col-md-9 col-sm-10 d-flex justify-content-center align-items-center w-100">
+                   <div class="card p-3 px-5 mx-5 bg-transBody w-50">
+                        <h3 class="text-center text-uppercase">ADD address</h3>
+                        <form action="{% url 'patient:edit_adres' id item %}" method="post"  >
+                                {% csrf_token %}
+                                {{form|crispy}}
+                                <div class="text-center">
+                                        <button class="btn btn-primary mt-2 w-50" type="submit">submit</button>
+
+                                </div>
+                        </form>
+                  </div>
+                </div>
+        </div> 
+
+{%endblock%}

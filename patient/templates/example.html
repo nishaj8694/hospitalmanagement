@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% load static%}  
+  {% load adminthings%}
+  <meta charset="UTF-8">
+  <title>Invoice</title>
+  <style>
+    /* Add your CSS styles here */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f4;
+      height: 3508 px;
+      width:  2480 px;
+    }
+
+    .invoice {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      width: 90%;
+      height: 100%;
+      margin: 0 auto;
+    }
+
+    .invoice-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .invoice-details {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .invoice-details div {
+      flex: 1;
+    }
+
+    .invoice-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    .invoice-table th,
+    .invoice-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+
+    .invoice-total {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .invoice-total span {
+      margin-right: 10px;
+    }
+
+    .thank-you {
+      text-align: center;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <div class="invoice">
+    <img src="{%static 'Doc\img\logo.png'%}" alt="" width="150px" height="100px">
+    <div class="invoice-header">        
+      <h1>Invoice</h1>
+      <p>Invoice Number: #{{order.order_date.day}}{{order.order_date.year}}{{order.id}}</p>
+    </div>
+    <div class="invoice-details">
+      <div>
+        <p>From: {{order.user}}<br>{{order.user.email}}</p>
+        <address>
+            {{order.address.name}}
+            <br>{{order.address.address}}
+            <br>{{order.address.city}}
+            <br>{{order.address.state}}
+            <br>{{order.address.contact}}
+        </address>
+      </div>
+      <div>
+        <p>To:</p>
+        <address>
+          Client Name<br>
+          Address Line 1<br>
+          City, State, Zip<br>
+          Country<br>
+          Email: client@example.com<br>
+          Phone: +9876543210
+        </address>
+      </div>
+    </div>
+    <table class="invoice-table">
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>Quantity</th>
+          <th>Unit Price</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Product A</td>
+          <td>2</td>
+          <td>$50.00</td>
+          <td>$100.00</td>
+        </tr>
+        <!-- Add more rows for other items -->
+      </tbody>
+    </table>
+    <div class="invoice-total">
+      <span>Total:</span>
+      <strong>$100.00</strong>
+    </div>
+    <div class="thank-you">
+      <p>Thank you for your business!</p>
+    </div>
+  </div>
+</body>
+</html>

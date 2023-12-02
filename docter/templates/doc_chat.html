@@ -1,0 +1,305 @@
+{% extends "doc.html" %}
+{% load static%}
+{% block 'content' %}
+<style>
+  .chat1{
+    flex: 25;
+
+  }
+  .chat2{
+    flex: 75;
+  
+  }
+  #backbutton{
+    display: none;
+  }
+  .act{
+    background-color: rgb(255, 255, 255,0.5);
+  }
+  @media (max-width:578px) {
+    .chat1{
+       flex: 1;
+    } 
+    .chat2{
+       flex: 1;
+       display: 'd-none';
+    }
+    #backbutton{
+       display:inline;
+    }
+    
+  }
+</style>
+  <div class="d-flex m-5  border rounded-3" style="height: 90%;">
+    <div class="d-flex flex-column h-100 align-items-center 
+                bg-transBody  p-0 m-0 border-end  chat1">
+        <div class="border-bottom w-100 d-flex justify-content-center align-items-center " style="height:75px">
+          <h4 class="text-uppercase">{{request.user}}</h4>
+          <script id="userData" type="application/json">
+            { "username": "{{ request.user.username }}"}
+        </script>
+        </div>
+        <div class="overflow-y-auto w-100" style="height: 90%;">
+          <ul class=" w-100 p-0 m-0 ">
+            {% for i in pat%}
+                <li class="w-100 p-0 m-0" data-username="{{ i.patient.user}}" style="list-style: none;"> 
+                   <a href="javascript:void(0)"  
+                   value="{{i.docter_id}}" class="btn bg-transBody w-100  open-chat-btn" 
+                   data-user-id="{{i.id}}">{{i.patient}}
+                   <h6 class="d-inline  float-right {% if i.patient.user.online %} bg-success
+                    {% else %} bg-danger {% endif %}" id="light{{i.docter_id}}"></h6> 
+                  </a> 
+                </li>       
+              
+
+            {% endfor %}
+          </ul>
+           
+        </div>
+        
+    </div>
+    <div class="position-relative d-flex flex-column h-100 p-0 m-0 bg-transBody  chat2">
+      <div class="d-flex justify-content-center align-items-center h-100 chat2default">
+       <p class="d-inline">select the Patient to begine chat</p> <i class="bi bi-chat-dots " style="font-size: 2em; padding-bottom: 15px; margin-left:5px;"></i>
+      </div>
+      <div class="position-relative d-flex d-none flex-column h-100 p-0 m-0  chat2defaultnone">
+          <div class="d-flex align-items-center border-bottom row" style="height:75px; margin-right:1px; margin-left: 1px;">
+            <div class="col-lg-2 col-md-2 col-sm-4  col-4 d-flex align-items-center">
+                  <a href="javascript:void(0)" onclick="closeChat(event)" id="backbutton">
+                      <i class="bi bi-arrow-left-short text-black" style="font-size: 2em;"></i>
+                  </a>  
+                  <div style="height:95%;width:60%; border-radius:50%; background-color: antiquewhite; overflow: hidden;">
+                    <img src=""  alt="img" id="profileimage"  
+                        style="width: 100%; height: 100%; object-fit: cover;" 
+                        onerror="this.src='{% static 'chat/img/unknown.jpg' %}';">
+
+                  </div>
+            </div>
+            <div class="col-lg-10 col-md-10 col-sm-8 col-8">
+                <h3 class="p-0 m-0" id="profilename" style="transform: translate(-9%, 0%);"></h3>
+                <h6 class="p-0 m-0" id="profileonline" style="transform: translate(-9%, 0%);"></h6>
+            </div>
+          </div>
+          <div class="d-flex flex-column" style="height: 90%;">
+            <div class="overflow-y-auto p-3"  id="chat-content" style="height:95% ; scrollbar-width: thin;
+            scrollbar-color: transparent rgba(0, 0, 0, 0.3)">
+            </div>
+            <form class="position-relative"role="search">
+              <input class="form-control" type="search" id="chat-input" placeholder="Search" aria-label="Search">
+              <button class="btn btn-sm btn-success position-absolute w-15"
+              type="submit" style="right:2px;top: 2px;" id="chat-submit">Search</button>
+            </form>
+            
+          </div>
+      </div>    
+    </div>
+    <script>
+      let roomName=undefined;
+      let currentSocket;
+      const chatLog = document.querySelector('#chat-content');
+      const chat1 = document.querySelector('.chat1');
+      const chat2 = document.querySelector('.chat2');
+      const userProfile = document.getElementById('userData');
+      const userProfileData = JSON.parse(userProfile.textContent);
+
+      const chat2defaultnone = document.querySelector('.chat2defaultnone');
+      const chat2default = document.querySelector('.chat2default');
+       
+
+
+      window.addEventListener('load', function() {      
+            
+            if (window.innerWidth < 578) {
+               if (!chat2.classList.contains('d-none') && chat1.classList.contains('d-none')){
+            
+               }
+               else{
+                    chat2.classList.add('d-none');    
+                  }
+            }
+            else {
+                    chat1.classList.remove('d-none');
+                    chat2.classList.remove('d-none');
+                }
+        });
+
+
+      window.addEventListener('resize', function() {      
+            if (window.innerWidth < 578) {
+               if (!chat2.classList.contains('d-none') && chat1.classList.contains('d-none')){
+            
+               }
+               else{
+                    chat2.classList.add('d-none');    
+                  }
+            }
+            else {
+                    chat1.classList.remove('d-none');
+                    chat2.classList.remove('d-none');
+                }
+        });
+
+      document.addEventListener('DOMContentLoaded',function(){
+        const bt=document.querySelectorAll('.open-chat-btn');
+        bt.forEach(function(a){
+          a.addEventListener('click',function(){
+            const id=a.dataset.userId;
+            bt.forEach(function(a) {
+                a.classList.remove('act');
+            });
+            openChat(id)
+          })
+        })
+      })
+
+
+      function openChat(id) {
+        chat2defaultnone.classList.remove('d-none')
+        chat2default.classList.add('d-none')
+        if (window.innerWidth < 578) {
+          chat1.classList.add('d-none');
+          chat2.classList.remove('d-none');
+        }
+
+        if (currentSocket && currentSocket.readyState === WebSocket.OPEN) {
+            while (chatLog.firstChild) {
+                 chatLog.removeChild(chatLog.firstChild);
+            }
+            currentSocket.close();
+          }
+          var roomName=id
+          const socket = new WebSocket('ws://'+ window.location.host+ '/ws/'+ roomName + '/');
+
+          socket.onopen = function (event) {
+            // console.log(WebSocket connection opened for ${userId}:, event);
+          };
+
+          socket.onmessage = function(e) {
+                    const data = JSON.parse(e.data);
+                    const onoff = document.getElementById("profilename");
+                    const onimage = document.getElementById("profileimage");
+                    const onOnline = document.getElementById("profileonline");
+                    console.log(data.message)
+                    if (data.message !=undefined){
+                        console.log(data);                 
+                        const msge = document.createElement('p');
+                        msge.innerText = data.message;
+                        if (data.css_class === "current-user") {
+                            msge.style.textAlign = 'right';
+                            msge.style.color = 'blue';
+                        } else {
+                            msge.style.textAlign = 'left';
+                            msge.style.color = 'red';                  
+                        }
+                    chatLog.appendChild(msge);
+                    }
+                    console.log('1',data.username)
+                    console.log('2',userProfileData.username)
+                    
+                    if (data.username == userProfileData.username){ 
+                    if(data.profile !=undefined){
+                     
+                     onoff.innerHTML=data.profile      
+                   }
+                   if (data.images !=undefined){
+                    onimage.src=data.images 
+                   } 
+                   if (data.is_online ==true){
+                      onOnline.innerHTML='online'
+                   }
+                   if (data.is_online ==false){
+                      onOnline.innerHTML='offline'
+                   }
+                  }
+
+                  if (data.me_online !=undefined && data.username != userProfileData.username){ 
+                   if (data.me_online ==true){
+                      onOnline.innerHTML='online'
+                   }
+                   if (data.me_online ==false){
+                      onOnline.innerHTML='offline'
+                   }
+                  }
+                  
+          };
+
+          socket.onerror = function (error) {
+            // console.error(WebSocket error for ${userId}:, error);
+          };
+
+          socket.onclose = function (event) {
+            // console.log(WebSocket connection closed for ${userId}:, event);
+          };
+
+          // Set the currentSocket to the new WebSocket connection
+          currentSocket = socket;
+      }
+
+
+        document.querySelector('#chat-submit').addEventListener('click', function(e) {
+                    e.preventDefault() 
+                    if (currentSocket && currentSocket.readyState === WebSocket.OPEN) { 
+                    const messageInputDom = document.querySelector('#chat-input');
+                    const message = messageInputDom.value;
+                    console.log(message)
+                    currentSocket.send(JSON.stringify({
+                        'message': message
+                    }));
+                    messageInputDom.value = '';
+                  }
+                });
+
+
+      function closeChat(event) {
+        event.preventDefault(); 
+        if (chat1 && chat2) {
+          chat2.classList.add('d-none');
+          chat1.classList.remove('d-none');
+        }
+        if (currentSocket && currentSocket.readyState === WebSocket.OPEN) {
+            console.log('currentSocket is on')
+            while (chatLog.firstChild) {
+                 chatLog.removeChild(chatLog.firstChild);
+            }
+            currentSocket.close();
+          }
+
+      }
+       
+    
+      
+
+    </script>  
+   
+  </div>
+
+
+
+{%endblock%}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

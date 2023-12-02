@@ -1,0 +1,99 @@
+{% extends "user-admin.html" %}
+{%load crispy_forms_tags %} 
+{% block 'content' %}
+
+<div class="container w-100 h-100">
+                 
+    {% if messages%}                  
+    {% for message in messages %}
+    {% if message.tags == 'error'%}
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            var m="{{message}}";
+            console.log(m);
+            Swal.fire({
+                    position: 'center',
+                    icon: 'error',
+                    title: m,
+                    showConfirmButton: false,
+                    timer: 4000
+                    })
+           </script>
+           {%endif%}
+    {% if message.tags == 'success'%}
+           <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+           <script>
+               var m="{{message}}";
+               console.log(m);
+               Swal.fire({
+                       position: 'center',
+                       icon: 'success',
+                       title: m,
+                       showConfirmButton: false,
+                       timer: 4500
+                       })
+              </script>
+              {%endif%}       
+{% endfor %}
+{%endif%} 
+   <div class="row w-100 h-100 d-flex justify-content-center align-items-center">
+    <div class="col-lg-6 col-sm-10  ">
+        <div class="card p-5  bg-transBody ">
+            <h3 class="text-center text-dark">Payment</h3>
+            <div class="my-3">
+                <div class="d-flex justify-content-between">
+                    <h5>order ID</h5><h5>{{order.id}}</span></h5>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <h5>Payment ID</h5><h5>{{order.razor_orderid}}</span></h5>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <h5>Amount</h5><h5>{{order.Total_Price}}</h5></span></h5>
+                </div>
+            </div>
+            <button class="btn bg-body my-3" id="rzp-button2">Pay</button>
+            <a href="{% url 'patient:pay_cancel' order.id treat %}" class="btn btn-danger">Cancel</a>
+         </div>
+    </div>
+
+   </div>
+   
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script> 
+   <script>
+   var options = {
+       "key": "rzp_test_zXedqyyI6ertFX", 
+       "amount": "{{payment.amount}}", 
+       "currency": "INR",
+       "name": "Test corp",
+       "description": "Test Transaction",
+       "image": "https://example.com/your_logo",
+       "order_id": "{{payment.id}}", 
+       "handler": function (response){
+           
+           window.location.href='/Patient/ord_success/?razororder={{payment.id}}'
+           console.log('payment success')
+       },
+       "prefill": {
+           "name": "{{request.user.name}}",
+           "email": "{{request.user.email}}",
+           "contact": "123456789"
+       },
+       "notes": {
+           "address": "Razorpay Corporate Office"
+       },
+       "theme": {
+           "color": "#3399cc"
+       }
+   };
+   var rzp1 = new Razorpay(options);
+   rzp1.on('payment.failed', function (response){
+    window.location.href='/Patient/pay_cancel/?id={{order.id}}/item={{treat}}'
+    console.log('payment cancel')
+   });
+   document.getElementById('rzp-button2').onclick = function(e){
+       rzp1.open();
+       e.preventDefault();
+   }
+   </script>  
+{%endblock%}

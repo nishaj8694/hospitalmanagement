@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+{% load static%} 
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script>
+<!------ Include the above in your HEAD tag ---------->
+<style>
+    .invoice-title h2, .invoice-title h3 {
+    display: inline-block;
+}
+
+.table > tbody > tr > .no-line {
+    border-top: none;
+}
+
+.table > thead > tr > .no-line {
+    border-bottom: none;
+}
+
+.table > tbody > tr > .thick-line {
+    border-top: 2px solid;
+}
+.cnt{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.rt{
+    display: inline-block;
+ 
+}
+.lft{
+    display: inline-block;
+ 
+}
+.invoice-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    .invoice-table th,
+    .invoice-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+
+    .invoice-total {
+      width: 100%;  
+      display: flex;
+      flex: 1;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .invoice-total span {
+      margin-right: 10px;
+    }
+
+    .thank-you {
+      text-align: center;
+      font-style: italic;
+    }
+
+</style>
+</head>
+{% load adminthings%}
+<body>
+  <div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+    		<div class="invoice-title">
+    			<h2>Invoice number <strong>#{{order.order_date.day}}{{order.order_date.year}}{{order.id}}</strong> </h2>
+    		</div>   
+    		<hr>
+        </div>    
+       <div class="col-12 d-flex align-items-center">
+              <div>
+                <img src="{%static 'Doc\img\logo.png'%}" alt="" width="75px" height="50px">
+
+              </div>
+              <div class="cnt flex-grow-1">
+                <h1 class="text-center fs-2" style="text-align: center;" >Family HealthCare Center</h1>
+                <h5 class="text-center mt-0 fs-4" style="text-align: center;" >kozhikode</h5>
+              </div>
+        </div>
+    	<div class="col-12">
+            <div class="row">
+    			<div class="table-responsive">
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <td><strong>Bill To</strong></td>
+                                <td class="text-center"><strong></strong></td>
+                                <td class="text-center"><strong></strong></td>
+                                <td class="text-right"><strong></strong></td>
+                                <td class="text-right"><strong>ship to</strong></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{order.user}}<br>{{order.user.email}}</td>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                                <td class="text-right"></td>
+                                <td class="text-right ps-3">
+                                    {{order.address.name}}
+                                    <br>{{order.address.address}}
+                                    <br>{{order.address.city}}
+                                    <br>{{order.address.state}}
+                                    <br>{{order.address.contact}}
+
+                                </td>
+                            </tr>   
+                        </tbody>
+                    </table>
+                </div>
+    		 </div>
+    		 <div class="row">
+    			<div class="col-lg-6 col-xs-6">
+    				<address>
+    					<strong>Payment Method:</strong><br>
+    					{{order.Pay_option}}<br>
+    				</address>
+    			</div>
+    			<div class="col-lg-6 col-xs-6 text-right">
+    				<address>
+    					<strong>Order Date:</strong><br>
+    				    {{order.order_date.date}}<br><br>
+    				</address>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+    
+    <div class="row">
+    	<div class="col-md-12">
+    		<div class="panel panel-default">
+    			<div class="panel-heading">
+    				<h3 class="panel-title"><strong>Order summary</strong></h3>
+    			</div>
+    			<div class="panel-body">
+    				<div class="table-responsive">
+                        <table class="invoice-table">
+                            <thead>
+                                  <tr>
+                                    <th>Description</th>
+                                    <th>Quantity</th>
+                                    <th>Unit Price</th>
+                                    <th>Total</th>
+                                  </tr>
+                            </thead>
+                            <tbody>
+
+                                    {% for i in item%}	
+                                    <tr>
+                                        <td>{{i.product}}</td>
+                                        <td>{{i.quantity}}</td>
+                                        <td>{{i.quantity|rate:i.price}}</td>
+                                        <td>{{i.price}}</td>
+                                     </tr>
+                                   {% endfor %} 
+                            </tbody>
+                        </table>
+                    </div>    
+                    <div class="invoice-total">
+                                <span>Total:</span>
+                                <strong>${{order.Total_Price}}</strong>
+                    </div>
+                    <div class="thank-you">
+                                <p>Thank you for your business!</p>
+                    </div>    
+    		    </div>
+    	    </div>
+        </div>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,157 @@
+{% extends "user-admin.html" %}
+
+
+{% block 'content' %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+                
+              <div class="d-flex justify-content-center align-items-center h-100 w-100" >
+
+                <div class="card p-3 pl-5" style="width: 90%; height: 95%; background-color: transparent; border:none ;">
+                  {% if messages %}          
+                        {% for message in messages %}
+                            {% if message.tags == 'error'%}
+                                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                                <script>
+                                    var m="{{message}}";
+                                    console.log(m);
+                                    Swal.fire({
+                                            position: 'center',
+                                            icon: 'error',
+                                            title: m,
+                                            showConfirmButton: false,
+                                            timer: 3000
+                                            })
+                                    </script>
+                                    {%endif%}
+                            {% if message.tags == 'success'%}
+                                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                                    <script>
+                                        var m="{{message}}";
+                                        console.log(m);
+                                        Swal.fire({
+                                                position: 'center',
+                                                icon: 'success',
+                                                title: m,
+                                                showConfirmButton: false,
+                                                timer: 7000
+                                                })
+                                      </script>
+                                      {%endif%}       
+                        {% endfor %}
+                    {%endif%} 
+                  <div class="card-title shadow-lg p-2  bg-transBody rounded d-flex justify-content-between">
+                    <h3 class="pl-2">Order List</h3>
+                    <a href="{% url 'patient:ord_hys' %}" class="btn btn-primary rounded-3 float-right pr-2">Order history</a>
+                  </div>
+                  <div class="row"> 
+                      <div class="col-lg-6 mt-3">
+                              {% for i in order_list%}
+                              <div class="card mt-2  p-3 text-white bg-transBody"> 
+                                <table>
+                                  <thead><h5 class="text-dark text-uppercase">Order Details</h5></thead>
+                                  <tbody>
+                                   <tr>
+                                    <td class="d-flex justify-content-around">
+                                       <div>
+                                          <h6>Bill number</h6>
+                                          <h6>Order date</h6>
+                                          <h6>Product name</h6>
+                                          <h6>Product Quantity</h6>
+                                          <h6>Amount</h6>
+                                          <h6>Payment Type</h6>
+                                          <h6>order status</h6>
+                                       </div>
+                                       <div>
+                                          <h6>#{{i.id}}{{i.order_date.day}}{{i.order_date.year}}</h6>
+                                          <h6>{{i.order_date}}</h6>
+                                          {% if i.order_items.exists %}
+                                              <h6>{{ i.order_items.first.product }}</h6>
+                                              <h6>{{ i.order_items.first.quantity }}</h6>
+                                          {% endif %}
+                                          <h6>{{i.Total_Price}}</h6>
+                                          <h6>{{i.Pay_option}}</h6>                      
+                                          <h6>{{i.status}}</h6>
+                                       </div>    
+                                    </td>
+                                    <td> 
+                                      {% if i.order_items.exists %}
+                                        <img src="{{i.order_items.first.product.image.url}}" width="100px" height="100px"> 
+                                                                                           
+                                      {% endif %}         
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              {% if i.order_refund.all %}
+                                  {% for k in i.order_refund.all %}
+                                    {% if k.status == "completed" %}
+                                      <h5 class="text-danger mx-3">order is canceled</h5> 
+                                      <a class="btn btn-primary w-50 mx-3">Return completed</a>
+                                    {% elif k.status == "cancel" %}
+                                       <h5 class="text-danger mx-3">order is canceled</h5>
+                                       <a class="btn text-danger w-50 mx-3">Return Revoked</a>                          
+                                    {% else%} 
+                                       <h5 class="text-danger mx-3">order is canceled</h5>
+                                       <a class="btn btn-warning w-50 mx-3" >Return {{k.status}}</a>
+                                    {%endif%}   
+                                  {%endfor%} 
+                               {%else%}   
+                                  {% if i.status == "pending"%}
+                                    <div class="text-center mx-3">
+                                        <a class="canc  btn btn-danger bg-danger" data-item-id="{{i.id}}" value="{{ i.id }}">cancel</a> 
+                                    </div>
+                                  {% elif i.status == "cancel" %}
+                                      <h5 class="text-danger mx-3">order is canceled</h5>
+                                  {% elif i.status == "revoke" %}
+                                      <form action="{% url 'patient:cancel_order' %}" method="post">
+                                        {%csrf_token%}
+                                        <input type="hidden" name="dele"   value="{{i.id}}">
+                                        <button type="submit" class=" btn btn-danger bg-danger mx-3">Refund Request</button> 
+                                       </form>     
+                                  {%endif%} 
+                               {%endif%}   
+                              </div>
+                              {%endfor%} 
+                      </div>
+                  </div>
+                </div>
+
+                <div class="modal fade" id="deleteModal3" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                    <form action="{% url 'patient:cancel_order' %}" method="post">
+                      {% csrf_token %} 
+                        <div class="modal-header  d-flex align-items-center justify-content-center ">
+                          <div class="align-items-center">
+                            <h4 class="modal-title text-dark text-center ml-5" id="deleteModalLabel">CANCEL ORDER</h4>
+                          </div>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body ">
+                            <input type="hidden" name="dele" id="userdel_id"  value="">
+                            <h6 class="text-center text-dark">Are you want to  cancel the order</h6>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                          <button type="submit" class="btn btn-danger" id="confirmDelete">conform</button>
+                        </div>
+                    </form>  
+                    </div>
+                  </div>
+              </div>
+            </div>  
+              <script>
+                $(document).ready(function(){                  
+                $('.canc').click(function(e){
+                  e.preventDefault();
+                  var id = $(this).attr("value");
+                  // id = $(".delete-button").attr("value");
+                  console.log(id);
+                  $('#userdel_id').val(id);
+                  $('#deleteModal3').modal('show');
+                });
+              });
+              </script>   
+
+
+{%endblock%}

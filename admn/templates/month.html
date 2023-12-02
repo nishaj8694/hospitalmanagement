@@ -1,0 +1,170 @@
+{% extends "admin.html" %}
+{%load crispy_forms_tags %} 
+{% block 'content'%}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+  #monthly_div{
+    display: none;
+  }
+    .month-year-select {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.month-select,
+.year-select {
+  width: 48%;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  background-color: #fff;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.year-select option:first-child,
+.month-select option:first-child {
+color: #ccc;
+}
+</style>
+<div class="row justify-content-center align-items-center">
+    <div class="col-lg-11">
+      <div class="month-year-select py-3" style="float: right;">
+        <select class="month-select">
+          <option value="">Month</option>
+          <option value="01">January</option>
+          <option value="02">February</option>
+          <option value="03">March</option>
+          <option value="04">April</option>
+          <option value="05">May</option>
+          <option value="06">June</option>
+          <option value="07">July</option>
+          <option value="08">August</option>
+          <option value="09">September</option>
+          <option value="10">October</option>
+          <option value="11">November</option>
+          <option value="12">December</option>
+        </select>
+        <select class="year-select">
+          <option value="" disabled>Year</option>
+          <option value="2023">2023</option>
+          <option value="2022">2022</option>
+          <option value="2021">2021</option>
+          <option value="2020">2020</option>
+          <option value="2019">2019</option>
+          <option value="2018">2018</option>
+          <option value="2017">2017</option>
+          <option value="2016">2016</option>
+          <option value="2015">2015</option>
+          <option value="2014">2014</option>
+        </select>
+      </div>  
+    </div>    
+    <div class="col-lg-9" id="monthly_div" >
+      <canvas id="monthly_sale"  style="background-color:rgb(246, 249, 248)"></canvas>
+    </div>  
+    <div class="container-fluid pt-4 px-4">
+            <div class="row justify-content-center align-items-center g-4">
+                <div class="col-8">
+                    <div class="bg-light rounded h-100 p-4">
+                        <h6 class="mb-4">monthly_sale</h6>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Year</th>
+                                        <th scope="col">Month</th>
+                                        <th scope="col">Total revenue</th>
+                                    </tr>
+                                </thead>
+                                <tbody>  
+                                  {% for i in order%}
+                                    <tr> 
+                                        <td>{{i.year}}</td> 
+                                        <td>{{i.month}}</td>     
+                                        <td>{{i.total_revenue}}</td>
+                                    </tr>     
+                                  {%endfor%}
+                                </tbody>
+                            </table>
+                        </div>
+                        <form action="{% url 'download' %}" method="post">
+                            {%csrf_token%}
+                            <button class="btn btn-primary" type="submit" name="action" value="month">Download</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+         </div>
+      </div>           
+
+<script>
+    
+
+$(document).ready(function() {
+
+  $('.month-select, .year-select').on('change', function() {
+    var month = $('.month-select').val();
+    var year = $('.year-select').val();
+    
+    if (month != '' && year != '') {
+      $.post('/adm/sales_search', { month: month, year: year })
+        .done(function(data) {
+          // console.log(data)
+          var salesData = data.sales_data;
+          // console.log(salesData);
+          var labels = [];
+          var chartData = [];
+          for (var i = 0; i < salesData.length; i++) {
+            var date = new Date(salesData[i].year, salesData[i].month - 1, salesData[i].day); 
+            var days = date.getDate(); 
+
+            labels.push(days.toString()); 
+            chartData.push(salesData[i].total_revenue);
+          }
+
+          $('#monthly_div').show()
+          var canvas=document.getElementById('monthly_sale');
+          var ctx =canvas.getContext('2d');
+          if (window.chart) {
+            window.chart.destroy();
+          }
+
+          var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: labels,
+              datasets: [{
+                label: 'month day Sales',
+                data: chartData,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(55, 142, 182, 1)',
+                borderWidth: 1
+              }]
+            },
+            options: {
+              scales: {
+                yAxes:[{
+                  ticks:{
+                    beginAtZero: true
+                  }
+                }]
+              }
+            }
+          })
+        })
+        .fail(function(error) {
+          $('#monthly_div').hide()          
+        });
+    }
+  });
+});
+   
+</script>
+
+{%endblock%}

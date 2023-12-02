@@ -1,0 +1,46 @@
+{% extends "admin.html" %}
+
+{%load crispy_forms_tags %} 
+
+{% block 'content'%}
+
+
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <div class="col-12">
+            <div class="bg-light rounded h-100 p-4">
+                <h6 class="mb-4">Product List</h6>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Image</th>
+                                <th scope="col">Catagory</th>
+                                <th scope="col">size</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Available</th>
+                            </tr>
+                        </thead>
+                        <tbody>  
+                          {% for i in product%}
+                            <tr> 
+                                <td>{{i.name}}</td> 
+                                <td></td>     
+                                <td>{{i.catagory}}</td> 
+                                <td></td> 
+                                <td></td> 
+                                <td></td> 
+                                <td></td>
+                            </tr>
+                          {%endfor%}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{%endblock%}            

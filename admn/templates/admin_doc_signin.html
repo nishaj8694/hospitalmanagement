@@ -1,0 +1,55 @@
+{% extends "admin.html" %}
+
+{% block 'content'%}
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="card col-5 p-5">
+            <h2 class="text-center">Login</h2>
+              {% if messages %}
+            
+                 {% for message in messages %}
+                  <div  style="position: absolute; top:0;  left:30%;">  
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                         {{message}}
+                    </div>
+                  </div>  
+                {% endfor %}
+              {%endif%}
+     
+            <form action="{% url 'doc_up' %}" method="post">
+                {% csrf_token %}
+                <div class="mb-2">
+                    <label for="" class="form-label">Name  </label>
+                    <input type="text" name="name" id="" class="form-control" value=>
+                </div>
+                <div class="mb-2">
+                    <label for="" class="form-label">Username  </label>
+                    <input type="text" name="username" id="" class="form-control">
+                </div>
+                <div class="mb-2">
+                    <label for="" class="form-label">Email  </label>
+                    <input type="email" name="email" id="" class="form-control">
+                </div>
+                <div class="mb-2">
+                    <label for="" class="form-label">Contact_number </label>
+                    <input type="number" name="number" id="" class="form-control">
+                </div>
+                <div class="mb-2">
+                    <label for="" class="form-label">Create Password  </label>
+                    <input type="password" name="password" id="" class="form-control">
+                </div>
+
+                <div class="mb-2">
+                    <label for="" class="form-label">Confirm Password  </label>
+                    <input type="password" name="comf-password" id="" class="form-control">
+                </div>
+                <div class="d-grid ">
+                    <button class="btn btn-success btn-lg" type="submit">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>            
+
+{%endblock 'content'%}   

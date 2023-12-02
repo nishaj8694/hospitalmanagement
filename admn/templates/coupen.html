@@ -1,0 +1,25 @@
+{% extends "admin.html" %}
+
+{%load crispy_forms_tags %} 
+
+{% block 'content'%}
+
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="card col-4 p-5">
+             <h3 class="text-center">add coupen</h3>
+             <h1></h1>
+             <form action="{% url 'coupn'  %}" method="post">
+                 {% csrf_token %}
+                 <div class="mb-2">
+                    {{form|crispy}}
+                 </div>
+                 <div class="d-grid ">
+                     <button class="btn btn-success btn-lg" type="submit">Submit</button>
+                 </div>
+             </form>
+         </div>
+     </div>
+ </div>  
+
+{%endblock%}

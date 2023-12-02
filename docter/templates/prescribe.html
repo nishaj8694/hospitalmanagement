@@ -1,0 +1,136 @@
+{% extends "doc.html" %}
+{% block 'content'%}
+<div class="d-flex justify-content-center align-item-center p-5 w-100 h-100">
+    <div class="row  d-flex justify-content-center w-100 h-100">
+                <div class="card col-6 p-1 bg-transBody">
+                    <div class="text-center mb-2 fs-3">Medicine List</div>
+                    {%for i in product%}
+                    <div class="row mb-2">
+                        <div class="col-6 gp1 d-flex justify-content-start ps-5">
+                            <label class="mb-2" data-user-value="{{i.name}}">{{i.name}} </label> 
+                        </div> 
+                        <div class="col-6 gp2">
+                            <div class="row">
+                                <div class="col-6 selectcolom">
+                                    <select class="btn btn-outline-secondary btn-sm w-75 bg-transBody">
+                                        {%for j in i.item.all%} 
+                                                <option value="{{j.id}}">{{j.size}}</option>
+                                        {%endfor%}
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <button class="btn btn-outline-success btn-sm add-button">add</button>       
+                                </div>
+                            </div>                   
+                        </div>
+                    </div>                    
+                    {%endfor%}    
+            </div>
+
+        <div class="col-6">
+            <div class="toast align-items-center position-absolute" role="alert" 
+                    style="z-index: 999999;"   aria-live="assertive" aria-atomic="true" id="emptyToast">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        The symptoms field is empty. Please enter symptoms.
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+            <form action="{% url 'docter:prescribe' id %}" method="post" id="prescriptionForm">
+                {%csrf_token%}
+                <div class="card d-flex flex-column  bg-transBody w-100 h-100 ">
+                    <div class="text-center fs-3">Treatment Priscription</div>
+                    <div class="px-4">
+                        <input type="text" class="text-bgbody w-100 mx-2" name="symtems" id="symtems"
+                         style="background-color: transparent; color: white; border: none; 
+                         border-bottom: 0.5px solid rgb(255, 255, 255,0.4); outline: none; "
+                         placeholder="enter the symtems" 
+                         >
+                    </div>
+
+                    <div class="">
+                        <div id="selected-items" ></div>
+                    </div>
+                    <div class="text-center my-2">
+                        <input type="submit" value="Submit" class="w-25 btn btn-primary" id="formsubmitbutton">
+                    </div>
+                </div>
+            </form>     
+        </div>    
+    </div>
+</div>     
+       
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+           
+<script>
+    $(document).ready(function(){
+            var quantity=1;
+
+        $('#prescriptionForm').on('submit',function(e){
+            e.preventDefault();
+            const name=document.getElementById('symtems').value
+            if(name===''){
+                $('#emptyToast').toast('show');                    
+            }
+            else{
+                this.submit()
+            }
+        })    
+
+        $(document).on('click', '.quantity-right-minus', function(e) {
+            e.preventDefault();
+            var quantityDisplay = $(this).siblings('.quantity-display');
+            var quantity = parseInt(quantityDisplay.val());
+            quantityDisplay.val(quantity + 1);
+
+            $(this).closest('.appended-item').find('.quantity').val(quantity + 1);
+        });
+
+        $(document).on('click', '.quantity-left-minus', function(e) {
+            e.preventDefault();
+            var quantityDisplay = $(this).siblings('.quantity-display');
+            var quantity = parseInt(quantityDisplay.val());
+            if (quantity > 1) {
+                quantityDisplay.val(quantity - 1);
+                $(this).closest('.appended-item').find('.quantity').val(quantity - 1);
+            }
+        });    
+        
+
+
+        $('#selected-items').on('click', '.remove-item', function() {
+            $(this).closest('.appended-item').remove();
+        });
+    
+
+        $('.add-button').on('click', function() {
+                var selectedItem = $(this).closest('.row').find('select').val();
+                var selectedName = $(this).closest('.row').find('select option:selected').text();
+
+                var itemName = $(this).closest('.gp2').siblings('.gp1').find('label').text().trim();
+                console.log(selectedItem)
+                console.log(itemName)
+                var selectedItemsDiv = $('#selected-items');
+                var existingItems = selectedItemsDiv.find('.appended-item input[name="selected_items[]"][value="' + selectedItem + '"]').closest('.appended-item');
+                console.log(existingItems)
+                if (existingItems.length === 0) {
+                    selectedItemsDiv.append('<div class="row py-1 appended-item">' +
+                            '<div class="col-7 d-flex justify-content-start ps-5">' +
+                            '<input type="hidden" name="selected_items[]" value="' + selectedItem + '">' +
+                            '<input type="hidden" name="item_names[]" value="' + itemName + '">' +    
+                            '<p value="' + selectedItem + '">' + itemName + ' - ' +selectedName + '</p>' +
+                            '<input type="hidden" class="quantity" name="quantities[]" value="1">' +
+                            '</div>' +
+                            '<div class="col-5">' +
+                            '<button class="btn btn-sm btn-outline-success quantity-left-minus py-0 fs-5 text-dark" >-</button>' +
+                            '<input type="text" class="text text-center btn btn-sm quantity-display border-1 "  style="width:50px;background-color:rgb(255, 255, 255,0.4)" value="'+quantity+'" name="quantity[]" disabled>'+
+                            '<button class="btn btn-sm btn-outline-success quantity-right-minus py-0 fs-5 text-dark">+</button>' +
+                            '<button class="btn btn-danger btn-sm remove-item">Remove</button>' +
+                            '</div>' +
+                            '</div>');
+                }
+            });
+  });   
+</script>
+{%endblock%}

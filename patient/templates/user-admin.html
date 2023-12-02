@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {%load static%}
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+      <title>Dashboard-Docter</title>
+      <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+      <link rel="stylesheet"  href="{%static 'Doc\css\HospitalDocter.css' %}">
+      {% block js %}
+      {% endblock %}
+      <style>
+
+        .video-box {
+                    position: absolute;
+                    display: none;
+                    right: 10%;
+                    top:10%;
+                    width: 500px;
+                    height: 500px;
+                    cursor: move;
+                    z-index: 99999;
+                    border-radius: 10px;
+                    resize: both;
+                    overflow:auto;
+                    background-color: rgb(255, 255, 255,0.5);
+                }
+        @media (max-width:578px) {
+    
+         .video-box{
+             width: 350px;
+             height: 350px;
+          }
+    
+        }
+      </style>          
+  </head>
+    <body>
+      <div class="Patienthead px-3">
+       <div>
+        <a href="{% url 'home:home' %}"id="adminimage">
+          <img src="{%static 'Doc\img\loder.png'%}" alt="" width="100%" height="100%" class="adminimg2">
+          <img src="{%static 'Doc\img\logo.png'%}" alt="" width="100%" height="100%" class="adminimg1">
+        </a>
+       </div> 
+       <div class="Right">
+         <a href="{% url 'home:lout' %}" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="LogOut" >
+            <i class="bi bi-person-square"></i>
+         </a>
+         <!-- <i class="bi bi-person-down border  border-4 border-info-subtle rounded-circle px-2"></i> -->
+         <a href="javascript:void(0)" id="headerarrow" onclick="openNav()"><i class="fas  fa-align-justify"
+           style="font-size:20px; border: 5px solid; border-radius:5px;padding: 3px 5px 3px 5px; margin-top: 5px;"></i></a> 
+        </div>
+      </div>
+      <div class="adminbody">
+        <div id="mySidenav" class="sidenav" >
+          <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+         <li class="sidebar-header">MAIN NAVIGATION</li>
+            <ul class="m-0 p-0">
+              <li class="nav-link {%if page == 'dashboard' %} active{%endif%}">
+                <a href="{% url 'patient:Pat_dashboard' %}" class="mx-4">
+                <i class="bi bi-houses me-2"></i><span>Dashboard</span>
+                </a>
+              </li>
+              <li class="nav-link {%if page == 'appoiment' %} active bg-transBody text-dark{%endif%}">
+                <a href="{% url 'patient:Patient_appoiment' %}" class="mx-4 {%if page == 'appoiment' %}text-dark{%endif%}">
+                  <i class="bi bi-slack me-2"></i><span>Appointent</span>
+                </a>
+              </li>
+              <li class="nav-link {%if page == 'book' %} active bg-transBody text-dark{%endif%}">
+                <a href="{% url 'patient:appoiment' id=1 %}" class="mx-4 {%if page == 'book' %} text-dark{%endif%}">
+                  <i class="bi bi-slack me-2"></i><span>Book OP</span>
+                </a>
+               </li> 
+              <!-- <i class="zmdi zmdi-invert-colors"></i> -->
+              <li class="nav-link {%if page == 'med' %} active bg-transBody text-dark{%endif%}">
+                <a href="{% url 'patient:treatment' %}" class="mx-4 {%if page == 'med' %} text-dark{%endif%}">
+                  <i class="bi bi-slack me-2"></i><span>My Medicine</span>
+                </a>
+              </li>
+              <li class="nav-link {%if page == 'chat' %} active text-dark bg-transBody{%endif%}">
+                <a href="{% url 'patient:pat_chat' %}" class="mx-4 {%if page == 'chat' %}text-dark{%endif%}">
+                  <i class="bi bi-slack me-2"></i><span class="">Chat</span>
+                </a>
+              </li>
+              <li class="nav-link {%if page == 'order' %} active bg-transBody text-dark{%endif%}">
+                <a href="{% url 'patient:ord' %}" class="mx-4 {%if page == 'order' %}text-dark{%endif%}">
+                  <i class="bi bi-slack me-2"></i><span>Orders</span>
+                </a>
+              </li>
+          </ul>
+          <div class="menufooter">
+            <div class="sidenav-footer">
+              <div class="d-flex">
+                <div class="col-8">
+                  <div class="small">Logged in as:</div>
+                  {{request.user.username}}
+                </div>
+                <div class="col-4 d-flex justify-content-end">
+                  {%if profile_picture_url%}
+                    <img src="{{ profile_picture_url.url }}" class="img-radius w-50 h-100 rounded-circle" alt="User-Profile-Image">
+                  {%else%}
+                  <img src=""  alt="User" class="img-radius w-50 h-100 rounded-circle"
+                  onerror="this.src='{% static 'chat/img/unknown.jpg' %}';">
+                  {%endif%}
+                </div>
+              </div>
+              <!-- <div class="small">Logged in as:</div>
+              {{request.user.username}} -->
+            </div> 
+          </div>
+          <script>
+              $(document).ready(function() {
+    var isDragging = false;
+    var offsetX, offsetY;
+    var initialWidth, initialHeight;
+    var videoBox = document.getElementById('video-Box');
+
+    function vedio() {
+        $('#video-Box').show();
+    }
+   let mediaStream
+    function stop(){
+      if (mediaStream) {
+              mediaStream.getTracks().forEach(track => track.stop());
+              const videoElement = document.getElementById('videoElement');
+          if (videoElement) {
+            videoElement.remove(); 
+          }
+        }
+      }
+   
+
+
+    $('#vedioButton').on('click', function() {
+        console.log('Video button clicked');
+        videoBox.style.display='block'
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                .then(function(stream) {
+                    mediaStream = stream; 
+                    var video = document.createElement('video');
+                    video.srcObject = stream;
+                    video.autoplay = true;
+                    video.setAttribute('id', 'videoElement');
+                    video.style.width = '100%'; 
+                    video.style.height = '90%';
+                    // video.style.overflow='hidden';
+                    videoBox.appendChild(video);
+                })
+                .catch(function(err) {
+                    console.error('Error accessing media devices:', err);
+                }); 
+    });
+
+    $('#closeButton').on('click', function() {
+
+        console.log('Close button clicked');
+        videoBox.style.display='none'
+        stop()
+        // $('#video-Box').hide();
+    });
+    $('#stopButton').on('click', function() {
+      stop();
+     });
+
+    function startDrag(e) {
+        isDragging = true;
+        offsetX = e.clientX - videoBox.getBoundingClientRect().left;
+        offsetY = e.clientY - videoBox.getBoundingClientRect().top;
+        initialWidth = videoBox.offsetWidth;
+        initialHeight = videoBox.offsetHeight;
+    }
+
+    function stopDrag() {
+        isDragging = false;
+    }
+
+    function drag(e) {
+        if (isDragging) {
+            videoBox.style.top = (e.clientY - offsetY) + 'px';
+            videoBox.style.left = (e.clientX - offsetX) + 'px';
+        }
+    }
+
+    videoBox.addEventListener('mousedown', startDrag);
+    videoBox.addEventListener('mouseup', stopDrag);
+    videoBox.addEventListener('mousemove', drag);
+});
+
+
+
+
+
+        //      const videoBox = document.getElementById('videoBox');
+        //      console.log('vediio',videoBox)
+        //      let isDragging = false;
+        //     let offsetX, offsetY;
+
+        //     videoBox.addEventListener('mousedown', startDrag);
+        //     videoBox.addEventListener('mouseup', stopDrag);
+        //     videoBox.addEventListener('mousemove', drag);
+        //     window.addEventListener('load', function() {      
+        //         videoBox.style.display='none';
+        //      });
+
+        //      function startDrag(e) {
+        //     isDragging = true;
+        //     offsetX = e.offsetX;
+        //     offsetY = e.offsetY;
+        // }
+
+        // function stopDrag() {
+        //     isDragging = false;
+        // }
+        // function drag(e) {
+        //     if (isDragging) {
+        //         videoBox.style.top = (e.clientY - offsetY) + 'px';
+        //         videoBox.style.left = (e.clientX - offsetX) + 'px';
+        //     }
+        // }
+
+        // // Close button functionality
+        // const closeButton = document.getElementById('closeButton');
+        // closeButton.addEventListener('click', () => {
+        //     videoBox.style.display = 'none'; // Hide the box on close
+        // });
+        // const vedioButton = document.getElementById('vedioButton');
+        // vedioButton.addEventListener('click', () => {
+        //     videoBox.style.display = 'block'; // Hide the box on close
+        // });
+
+             
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+              return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+          </script>
+           
+          
+          <script  src="{%static 'Doc\js\HospitalDocter.js' %}"></script> 
+        </div>  
+        <div class="admincontent">
+          <div class="video-box" id="video-Box">
+            <!-- Video chat elements will go here -->
+                <i class="bi bi-x-square-fill" id="closeButton" style="float: right; margin-right: 10px;font-size: larger;"></i>
+                <button id="stopButton">stop</button>
+
+          </div>
+                  {% if messages%}                  
+                     {% for message in messages %}
+                        {% if message.tags == 'error'%}
+                            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                            <script>
+                                var m="{{message}}";
+                                console.log(m);
+                                Swal.fire({
+                                        position: 'center',
+                                        icon: 'error',
+                                        title: m,
+                                        showConfirmButton: false,
+                                        timer: 4000
+                                        })
+                              </script>
+                        {%endif%}
+                        {% if message.tags == 'success'%}
+                              <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                              <script>
+                                  var m="{{message}}";
+                                  console.log(m);
+                                  Swal.fire({
+                                          position: 'center',
+                                          icon: 'success',
+                                          title: m,
+                                          showConfirmButton: false,
+                                          timer: 4500
+                                          })
+                              </script>
+                        {%endif%}       
+                      {% endfor %}
+                  {%endif%}
+                  {% if prof.is_verify %} 
+                    {% if prof%} 
+                     <div class="container h-100 " > 
+                      <div class="page-content page-container" id="page-content">
+                        <div class="padding">
+                            <div class="row container d-flex justify-content-center py-5">
+                                <div class="col-lg-8 col-sm-10 px-0" >
+                                    <div class="card w-100 py-5" style="background-color: rgb(255, 255, 255,0.2);">
+                                        <div class="row m-l-0 m-r-0">
+                                            <div class="col-sm-3 bg-c-lite-green user-profile">
+                                                <div class="card-block text-center text-white">
+                                                
+                                                    <div class="m-b-25">
+                                                        {% if prof.image%}
+                                                          <img src="{{prof.image.url}}" class="img-radius" alt="User-Profile-Image" style="width:75px; height:75px">
+                                                        {%else%}
+                                                        <img src="" class="img-radius" alt="User"style="width:75px; height:75px"
+                                                        onerror="this.src='{% static 'chat/img/unknown.jpg' %}';">
+
+                                                        {%endif%}
+                                                    </div>
+                            
+                                                    <h6 class="p-0 m-0 mt-1 text-dark" >Name</h6>
+                                                    <p>{{prof.user.username}}</p>
+                                                    <a href="{% url 'patient:p_profile'%}"><i class="bi bi-pencil-square"></i></a>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <div class="card-block px-3">
+                                                    <h6 class="p-2 bg-transBody"
+                                                    style="margin-right: 10px;">Information</h6>
+                                                    <div class="row">
+                                                        <div class="col-sm-5 mx-2">
+                                                            <p class="p-0 m-0">Email</p>
+                                                            <h6 class="text-light">{{prof.user.email}}</h6>
+                                                        </div>
+                                                        <div class="col-sm-5 mx-2">
+                                                            <p class="m-0 p-0">Phone</p>
+                                                            <h6 class="text-light">{{prof.contact_number}}</h6>
+                                                        </div>
+                                                    </div>
+                                                    <h6 class="p-2 bg-transBody"
+                                                     style="margin-right: 10px;">Personal Detaile</h6>
+                                                    <div class="row">
+                                                        <div class="col-sm-6">
+                                                            <p class="m-0 p-0">Gender</p>
+                                                            <h6 class="text-light">{{prof.gender}}</h6>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <p class="m-0 p-0">other</p>
+                                                            <h6 class="text-light"></h6>
+                                                        </div>
+                                                    </div>
+                                                    <ul class="social-link list-unstyled m-t-40 m-b-10">
+                                                        <li><a href="#!" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="facebook" data-abc="true"><i class="mdi mdi-facebook feather icon-facebook facebook" aria-hidden="true"></i></a></li>
+                                                        <li><a href="#!" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="twitter" data-abc="true"><i class="mdi mdi-twitter feather icon-twitter twitter" aria-hidden="true"></i></a></li>
+                                                        <li><a href="#!" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="instagram" data-abc="true"><i class="mdi mdi-instagram feather icon-instagram instagram" aria-hidden="true"></i></a></li>                                                        
+                                                    </ul>
+                                                </div>
+                                                <div class="text-center">
+                                                  <h5>Wallet Amount:<strong class="text-dark"> $ {{wallet.amount}}</strong></h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  </div>  
+                {%endif%}
+              {%endif%}                   
+
+          {%if profile_verfy_check%}
+              {% block 'content' %}
+             
+              {% endblock %} 
+             
+          {%else%}          
+            <div class="d-flex justify-content-center align-items-center mt-5">
+               <h4>
+                 verify your phone number <a href="{% url 'home:verification' %}" class="text-dark"><strong>Click hear</strong></a>
+               </h4>
+            </div>
+          {%endif%}    
+        </div>
+               
+    </body>
+
+</html>

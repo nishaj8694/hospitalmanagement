@@ -1,0 +1,164 @@
+{% extends "doc.html" %}
+
+{% block 'content'%}
+<div class="container">
+                 
+    {% if messages%}                  
+    {% for message in messages %}
+    {% if message.tags == 'error'%}
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            var m="{{message}}";
+            console.log(m);
+            Swal.fire({
+                    position: 'center',
+                    icon: 'error',
+                    title: m,
+                    showConfirmButton: false,
+                    timer: 4000
+                    })
+           </script>
+           {%endif%}
+    {% if message.tags == 'success'%}
+           <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+           <script>
+               var m="{{message}}";
+               console.log(m);
+               Swal.fire({
+                       position: 'center',
+                       icon: 'success',
+                       title: m,
+                       showConfirmButton: false,
+                       timer: 4500
+                       })
+              </script>
+              {%endif%}       
+{% endfor %}
+{%endif%} 
+    {% if docter.image and docter.department %} 
+    <div class="row align-items-center flex-row-reverse m-3 bg-transBody">
+        <div class="col-12">
+            <div class="about-text go-to">
+                <h3 class="bg-ligth  mb-1 mt-2 text-uppercase">{{docter.user}}</h3>
+                <div class="row about-list">
+                    <div class="col-md-4 mb-3">
+                        <img src="{{docter.image.url}}" alt="image" width="200px" height="200px" style="border-radius: 10px;" >
+                    </div>
+                    <div class="col-md-4">
+                        <div class="medias">
+                            <label class="fw-semibold">Deparment</label>
+                            <p>{{docter.department}}</p>
+                        </div>
+                        <div class="medias">
+                            <label class="fw-semibold">Specilization</label>
+                            <p>{{docter.specialization}}</p>
+                        </div>
+                        <div class="medias">
+                            <label class="fw-semibold">Gender</label>
+                            <p>{{docter.gender}}</p>
+                        </div>
+                        <div class="medias">
+                            <label class="fw-semibold">Residence</label>
+                            <p>{{docter.residence}}</p>
+                        </div>
+                        <div class="medias">
+                            <label class="fw-semibold">Address</label><br>
+                            <p>{{docter.address}}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="medias">
+                            <label class="fw-semibold">E-mail</label><br>
+                            <p>{{docter.user.email}}</p>
+                        </div>
+                        <div class="medias">
+                            <label class="fw-semibold">Phone</label>
+                            <p>{{docter.contact_number}}</p>
+                        </div>
+                        <div class="medias">
+                            <label class="fw-semibold">Badge-Number</label>
+                            <p>{{docter.badge_id}}</p>
+                        </div>
+                        <div class="medias">
+                            <label class="fw-semibold"></label>
+                            <p></p>
+                        </div>
+                        <div class="medias">
+                            <label class="fw-semibold"></label>
+                            <p></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        <a href="{% url 'docter:doc_edit_profile' %}" class="font-weight-bold" style="font-size: large;">
+            <i class="bi bi-pencil-square"></i>Edit Profile</a>
+
+    </div>
+    {% if docter.is_verify %}
+
+    {%else%}
+         <div class="d-flex justify-content-center align-item-center">
+            <h5 style="color:brown"><strong> Phone number is not verified </strong> <a href="{% url 'home:verification' %}" style="color:rgb(51, 57, 4)">click to verfy</a></h5>
+         </div> 
+    {%endif%}
+    <style>
+        @keyframes text-blink{
+            0%{
+                color: black;
+            }
+            25%{
+                color: wheat;
+            }
+            50%{
+                color: rgb(203, 172, 113);
+            }
+            75%{
+                color: rgb(188, 175, 151);
+            }
+            100%{
+                color: black;
+            }
+        }
+        .blink{
+            animation: text-blink 1s infinite ;
+        }
+    </style>
+    <div class="counter p-3 bg-transBody mx-3" style="border-radius: 15px;">
+        <div class="row " >
+            <div class="col-6 col-lg-3">
+                <div class="count-data text-center">
+                    <h6 class="count h2  blink" data-to="500" data-speed="500">{{My_no}}</h6>
+                    <p class="m-0px font-w-600 ">My Patient</p>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="count-data text-center">
+                    <h6 class="count h2" data-to="150" data-speed="150">{{P_no}}</h6>
+                    <p class="m-0px font-w-600">Patient list</p>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="count-data text-center">
+                    <h6 class="count h2" data-to="850" data-speed="850">{{Pr_no}}</h6>
+                    <p class="m-0px font-w-600">Medicines</p>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="count-data text-center">
+                    <h6 class="count h2" data-to="190" data-speed="190">{{AP_no}}</h6>
+                    <p class="m-0px font-w-600">Appoiment</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {%else%}
+       <div class="text-center mt-5">
+           <h3>YOUR PROFILE NEED TO COMPLETED</h3>
+           <a href="{% url 'docter:doc_edit_profile' %}" class="font-weight-bold" style="font-size: large;">CREATE Profile</a>
+       </div>
+    {%endif%}   
+</div>
+
+{%endblock%}

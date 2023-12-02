@@ -1,0 +1,292 @@
+{% extends "base.html" %}
+{% block 'content' %}
+{% load static%}
+{% load filt%}
+
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Cookie&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+
+    <!-- Css Styles -->
+    <link rel="stylesheet" href="{% static 'Prod/css/Pd_bootstrap.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'Prod/css/Pd_font-awesome.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'Prod/css/Pd_elegant-icons.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'Prod/css/Pd_jquery-ui.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'Prod/css/Pd_magnific-popup.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'Prod/css/Pd_owl.carousel.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'Prod/css/Pd_slicknav.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'Prod/css/Pd_style.css' %}" type="text/css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous"> -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+    <style>
+       .disc{
+        margin-top: 10px;
+        position: relative;
+        display: none;
+       }
+    </style>
+
+    <!-- Breadcrumb Begin -->
+    <div class="breadcrumb-option">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb__links">
+                        <a href="./index.html"><i class="fa fa-home"></i> Home</a>
+                        <span>Product</span>
+                        <span>Checkout</span>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+
+    <!-- Checkout Section Begin -->
+    <section class="checkout spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="coupon__link">
+                        <h6 class="coupen_data" ><span class="icon_tag_alt"></span><a href="#" id="coupen" style="text-decoration: none;">Have a coupon?</a> Click
+                            here to enter your code.</h6>
+                            <div class="row justify-content-center">
+                                <div class="col-lg-5 col-md-8 col-sm-10 col-xs-8 footer__newslatter  disc">
+                                    <form action="{% url 'home:coupon' %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="text" placeholder="Enter coupen code" name="coupon">
+                                        <button type="submit" class="site-btn">APPLY</button>
+                                    </form>
+                                </div> 
+                            </div>
+                            
+                            <!-- <div class="disc">
+                                <h6 id="h6tex">Discount codes</h6>
+                                <form action="{% url 'home:coupon' %}" method="post">
+                                    {%csrf_token%}
+                                    <input type="text" name="coupon" placeholder="Enter your coupon code">
+                                    <button type="submit" class="dibut">Apply</button>
+                                </form>
+                                
+                            </div>   -->
+                    </div>
+                </div>
+                
+            </div>
+            {% if messages %}
+       
+          
+            {% for message in messages %}
+                 {% if message.tags == 'error'%}
+                     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                     <script>
+                         var m="{{message}}";
+                         console.log(m);
+                         Swal.fire({
+                                 position: 'center',
+                                 icon: 'error',
+                                 title: m,
+                                 showConfirmButton: false,
+                                 timer: 3000
+                                 })
+                        </script>
+                        {%endif%}
+                 {% if message.tags == 'success'%}
+                        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                        <script>
+                            var m="{{message}}";
+                            console.log(m);
+                            Swal.fire({
+                                    position: 'center',
+                                    icon: 'success',
+                                    title: m,
+                                    showConfirmButton: false,
+                                    timer: 7000
+                                    })
+                           </script>
+                           {%endif%}       
+            {% endfor %}
+        {%endif%} 
+            <form action="{% url 'home:order' item=item %}" method="post" class="checkout__form">{%csrf_token%}
+                <div class="row">
+                    <div class="col-lg-8">
+                      <h5>Billing detail</h5>  
+                      <div class="card bg-light border border-0">
+                        <div class="card-title border-bottom px-5 py-2">
+                            <h4 class="d-inline">Address</h4>
+                            <span class="float-right">
+                                <a href="{% url 'home:adres' %}" class="mx-4"><i class="text-dark bi bi-plus-circle">add</i></a>
+                            </span>
+                        </div>
+                        <div class="row">
+                                
+                                <!-- {% if messages%}
+                                 <p class="error">{{ messages}}</p>
+                                {%endif%}  -->
+                                {%if adress%} 
+                               <div class="col-lg-12 col-md-12 col-sm-12">
+                                    {% for ads in adress %}
+                                       <div class="row mb-3">
+                                        <div class="col-lg-1 col-md-2 col-sm-3 pt-2 pl-5">
+                                            <input type="radio" name="address" id="address{{ ads.id }}" value="{{ ads.id }}" required>
+                                            <label for="address{{ ads.id }}"></label>
+                                        </div>
+                                        <div class="col-lg-11 col-md-10 col-sm-9">
+                                            <div class="row">
+                                               <div class="col-lg-10 col-md-8 col-sm-7">
+                                                {{ ads.Name }}<br>{{ ads.address }}<br>{{ ads.city }}<br>{{ ads.state }}<br>{{ ads.Pin_code }}                                                      
+
+                                               </div>
+                                               <div class="col-lg-2 col-md-4 col-sm-5">
+                                                  <a href="{% url 'home:remark' ads.id %}" class=""><i class="text-dark bi bi-pencil-square"></i></a><br>
+                                                  <a class="delete-button" data-item-id="{{ads.id}}" value="{{ ads.id }}" ><i class="bi bi-trash"></i></a> 
+                                                  
+                                               </div>
+
+                                            </div>
+                                        </div>
+                                       </div>
+                                    {% endfor %}
+                               </div> 
+                               
+                            {%endif%}
+                        </div>
+                        </div>
+                    </div>    
+                    <div class="col-lg-4 mt-5">
+                            
+                                <div class="checkout__order">
+                                  <h5>Your order</h5>
+                                    <div class="checkout__order__product">
+                                        <ul>
+                                            <li>
+                                                <span class="top__text">Product</span>
+                                                <span class="top__text__right">Total</span>
+                                            </li>
+                                            {% for i in cart_itm%}
+                                                
+                                                <li name="product">{{i.product}} <span name="total">$ {{i.price|total:i.quantity}}</span></li>
+                                            {%endfor%} 
+                                        </ul>
+                                    </div>
+                                    <div class="checkout__order__total">
+                                        <ul>
+                                            <li>Subtotal <span name="subtotal">$ {{cart_itm|subtotal}}</span></li>
+                                            {% if request.session.coupen %}
+                                                <li>Discount Price<span>$ {{request.session.coupen|discount}}<a href="{% url 'home:delet_session'%}" class="ml-3 bg-light rounded text-danger"><i class="icon_close"></i></a></span></li>
+                                                <li>total <span name="total">$ {{cart_itm|totalprice:request.session.coupen}}</span></li>
+                                                
+                                            {%else%}
+                                                <li>total <span name="subtotal">$ {{cart_itm|subtotal}}</span></li>
+                                            {%endif%}    
+                                        </ul>
+                                    </div>
+                                    <input type="radio" name="payment" id="cash" value="cash" required>
+                                    <label for="cash">Cash on delivery</label><br>
+                                    <input type="radio" name="payment" id="online" value="online" required>
+                                    <label for="online">Online Payment</label><br>
+                                    {% if request.session.coupen %}
+                                       <input type="radio" name="payment" id="wallet" value="wallet" {% if cart_itm|totalprice:request.session.coupen > walt %} disabled {%endif%} required>
+                                    {%else%}
+                                        <input type="radio" name="payment" id="wallet" value="wallet" {% if cart_itm|totprice > walt %} disabled {%endif%} required>
+                                    {%endif%}   
+                                    <label for="wallet">wallet</label> 
+                                    <div class="checkout__order__widget">
+                                        <!-- <label for="o-acc">
+                                            Create an acount?
+                                            <input type="checkbox" id="o-acc">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                        <p>Create am acount by entering the information below. If you are a returing customer
+                                        login at the top of the page.</p> -->
+                                        <!-- <label for="check"> -->
+                                            <!-- <input type="checkbox" id="check-payment">
+                                             <span class="checkmark"></span> -->
+                                        <!-- </label> -->
+                                        <label for="paypal">
+                                            PayPal
+                                            <input type="checkbox" id="paypal">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    <button type="submit" id="rzp-button1" class="site-btn">Place oder</button>
+                                </div>
+                              
+                        </div>
+                    </div>
+                </form>
+                <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                       <form action="{% url 'home:delete_address' %}" method="post">
+                        {% csrf_token %} 
+                          <div class="modal-header  d-flex align-items-center justify-content-center ">
+                             <h2 class="modal-title" id="deleteModalLabel">CONFIRM DELETION</h2>
+                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body ">
+                             <input type="hidden" name="dele" id="del_id"  value="">
+                              <h6>Are you want to delete item</h6>
+                          </div>
+                          <div class="modal-footer">
+                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                             <button type="submit" class="btn btn-danger" id="confirmDelete">Delete</button>
+                          </div>
+                       </form>  
+                      </div>
+                    </div>
+                </div>
+                <script>
+                    $(document).ready(function(){
+                        $('.delete-button').click(function(e){
+                            e.preventDefault();
+                
+                            var id = $(this).attr("value");
+                            // id = $(".delete-button").attr("value");
+                
+                            $('#del_id').val(id);
+                            $('#deleteModal').modal('show');
+                        });
+                    });
+                </script>  
+                <div class="row">
+                    <div class="col-8">
+                        {% block 'content_add'%}
+
+
+                        {% endblock%}  
+                    </div>
+
+                </div>
+               
+            </div>
+        </section>
+        
+        
+                
+        <script>
+            $(document).ready(
+            function(){
+              $(".coupen_data").click(function () {
+                $(".disc").toggle('slow');
+              });
+
+    });   
+        </script>
+
+
+        <script src="{% static 'Prod/js/Pd_jquery-3.3.1.min.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_bootstrap.min.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_jquery.magnific-popup.min.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_jquery-ui.min.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_mixitup.min.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_jquery.countdown.min.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_jquery.slicknav.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_owl.carousel.min.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_jquery.nicescroll.min.js' %}"></script>
+        <script src="{% static 'Prod/js/Pd_main.js' %}"></script>
+{%endblock%}

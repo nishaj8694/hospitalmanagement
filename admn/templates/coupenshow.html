@@ -1,0 +1,80 @@
+{% extends "admin.html" %}
+
+{%load crispy_forms_tags %} 
+
+{% block 'content'%}
+
+<div class="container-fluid">
+   <div class="row justify-content-center">
+    <a class="btn" href="{% url 'coupn' %}" style="font-size: 2em; float:right;"><i class="bi bi-plus-square " style="float:right;"></i></a>
+
+     <div class="col-lg-8">
+        <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">coupen name</th>
+                <th scope="col">discount Price</th>
+                <th scope="col">Expairy date</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in coupens%}  
+              <tr>
+                <th scope="row">{{i.id}}</th>
+                <td>{{i.name}}</td>
+                <td>{{i.discount_price}}</td>
+                <td>{{i.expairy_date}}</td>
+                <td>
+                    <a href="{% url 'coupnedit' i.id %}" class="btn bg-body">edit</a>
+                    <button class="coupendel  btn bg-body " id="coupensts{{i.id}}" val="{{i.id}}">delete</button>
+        
+                </td>
+              </tr>
+              {%endfor%}
+              
+            </tbody>
+          </table>
+     </div>
+   </div>
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+   <script>
+   
+    
+        $('.coupendel').on('click', function() {
+            var Id = $(this).attr('id').replace('coupensts', '');
+            console.log(Id);
+            swal({
+                title: "Are you sure?",
+                text: "Do you want to delete the coupon?",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((couponChange) => {
+                if (couponChange) {
+                    $.ajax({
+                        url:'/adm/coupndelete',
+                        method: 'POST',
+                        data: {id: Id},
+                        success: function(response) {
+                            location.reload();
+                            console.log('success');
+                        },
+                        error: function(response) {
+                            console.log('lost');
+                        }
+                    });
+                } else {
+                    return false;
+                }  
+            });    
+        });
+    </script>
+    
+
+</div>
+
+
+  {%endblock%}

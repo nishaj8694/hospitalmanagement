@@ -1,0 +1,100 @@
+{% extends "user-admin.html" %}
+
+{%load crispy_forms_tags %} 
+
+{% block 'content' %}
+
+<div class="container-fluid row d-flex justify-content-center align-items-center h-100 boarder-5">
+     
+    {% if messages %}
+       
+          
+       {% for message in messages %}
+
+            {% if message.tags == 'error'%}
+                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                <script>
+                    var m="{{message}}";
+                    console.log(m);
+                    Swal.fire({
+                            position: 'center',
+                            icon: 'error',
+                            title: m,
+                            showConfirmButton: false,
+                            timer: 3000
+                            })
+                   </script>
+                   {%endif%}
+            {% if message.tags == 'success'%}
+                   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                   <script>
+                       var m="{{message}}";
+                       console.log(m);
+                       Swal.fire({
+                               position: 'center',
+                               icon: 'success',
+                               title: m,
+                               showConfirmButton: false,
+                               timer: 7000
+                               })
+                      </script>
+                      {%endif%}       
+       {% endfor %}
+   {%endif%}
+   <!-- <div class="card">      -->
+    <div class="row d-flex justify-content-center align-items-center mt-1 mb-1 ">
+        <div class="card px-5 py-4 col-lg-6 col-sm-10 col-xs-12 bg-transBody " style="border: none;" >
+            <h5 class="text-center">APPOINTMENT</h5>
+            <form action="{% url 'patient:appoiment' id=1 %}" method="post" class="text-dark"
+                    style="background-color: transparent;">
+                {%csrf_token%}
+                {{form.docter|as_crispy_field}}
+                {{form.appointment_date|as_crispy_field}}
+                <label for="id_appointment_time" style="background-color: transparent;">Choose Time</label>
+                <select name="time" id="id_appointment_time" class="form-control" style="background-color: transparent;">
+                </select>
+                {{form.reason|as_crispy_field}}
+                <div class=" d-flex justify-content-center align-items-center mt-3">
+                    <button type="submit" class="btn btn-primary rounded-pill w-50">submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+   </div> 
+<script>
+    const appointment_Date = document.getElementById("id_{{ form.appointment_date.html_name }}");
+    const appoiment_Docter = document.getElementById("id_{{ form.docter.html_name }}")
+    var appointmentTimeField = document.getElementById("id_appointment_time");            
+    let appointmentTimeSelect = null;
+   
+
+    function handleChange(event)  {
+      const selectDate = appointment_Date.value;
+      const selectDoctor = appoiment_Docter.value;
+      if (selectDate && selectDoctor){
+      appointmentTimeField.innerHTML = "";
+      appointmentTimeSelect = null;                     
+      var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/Patient/get_available_time_slots/?date=' + selectDate+ '&doctor=' + selectDoctor);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+            var response = JSON.parse(xhr.responseText);
+            var availableTimeSlots = response.time_slots;
+            console.log(availableTimeSlots);
+            for (var i = 0; i < availableTimeSlots.length; i++) {
+                var timeSlot = availableTimeSlots[i];
+                var option = document.createElement('option');
+                option.value = timeSlot;
+                option.text = timeSlot;
+                appointmentTimeField.add(option);
+            }
+            appointmentTimeSelect = appointmentTimeField;
+            }
+        };
+        xhr.send();
+        };
+      }
+        appointment_Date.addEventListener("change", handleChange);
+        appoiment_Docter.addEventListener("change", handleChange);
+  </script>
+{%endblock%}

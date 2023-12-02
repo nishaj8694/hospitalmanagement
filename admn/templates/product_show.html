@@ -1,0 +1,113 @@
+
+{% extends "admin.html" %}
+
+{% block 'content'%}
+
+
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <div class="col-12">
+            <div class="bg-light rounded h-100 p-4">
+                <h6 class="mb-4">Product List</h6>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Image</th>
+                                <th scope="col">Catagory</th>
+                                <th scope="col">size</th>   
+                                <th scope="col">Price</th>   
+                                <th scope="col">stock</th>   
+                                <th scope="col">Edit</th> 
+                                <th scope="col">Available</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>  
+                          {% for i in product%}
+                            <tr> 
+                                <td>{{i.name}}</td> 
+                                <td>
+                                    <img src="{{i.image.url}}" width="50px" height="50px">
+                                </td>     
+                                <td>{{i.catagory}}</td> 
+                                    {% if i.item.count > 0 %}
+                                        <td>
+                                        {% for j in i.item.all %}
+                                            <span>{{ j.size }}</span><br>
+                                        {% endfor %}
+                                        </td>
+                                        <td>
+                                        {% for j in i.item.all %}
+                                            <span>{{ j.price }}</span><br>
+                                        {% endfor %}
+                                        </td>
+                                        <td>
+                                            {% for j in i.item.all %}
+                                                <span>{{ j.stock }}</span><br>
+                                            {% endfor %}
+                                            </td>
+                                    {% else %}
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    {% endif %}
+                                         
+                                </td>
+                                <td>
+                                          <a class="btn btn-secondary " href="{% url 'ad_varient' i.id %}" ><i class="bi bi-plus-circle"></i></a>  
+                                    
+                                          <a class="btn btn-secondary " href="{%url 'delet_varit' i.id %}"><i class="bi bi-x-circle"></i></a> 
+
+                                </td>
+                                <td>{{i.is_available}}</td> 
+                                <td>
+                                     <a class="btn btn-primary " href="{% url 'edit_prod' i.id %}"><i class="bi bi-pencil-square"></i></a> 
+
+                                     <a class="delete-button  btn btn-danger bg-danger" data-item-id="{{i.id}}" value="{{ i.id }}"><i class="bi bi-trash"></i></a> 
+                                </td>
+                            </tr>
+                          {%endfor%}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+       <form action="{% url 'delete-item'%}" method="post">
+        {% csrf_token %} 
+          <div class="modal-header  d-flex align-items-center justify-content-center ">
+             <h2 class="modal-title" id="deleteModalLabel">CONFIRM DELETION</h2>
+             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body ">
+             <input type="hidden" name="dele" id="del_id"  value="">
+              <h6>Are you want to delete item</h6>
+          </div>
+          <div class="modal-footer">
+             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+             <button type="submit" class="btn btn-danger" id="confirmDelete">Delete</button>
+          </div>
+       </form>  
+      </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function(){
+        $('.delete-button').click(function(e){
+            e.preventDefault();
+
+            var id = $(this).attr("value");
+            // id = $(".delete-button").attr("value");
+
+            $('#del_id').val(id);
+            $('#deleteModal').modal('show');
+        });
+    });
+</script>   
+{%endblock%}

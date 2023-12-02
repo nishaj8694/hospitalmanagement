@@ -1,0 +1,478 @@
+
+{% extends "user-admin.html" %}
+{% load static%}
+{% block 'content' %}
+<style>
+
+  
+  .chat1{
+    flex: 25;
+
+  }
+  .chat2{
+    flex: 75;
+  
+  }
+  #backbutton{
+    display: none;
+
+  }
+  
+  .act{
+    background-color: rgb(255, 255, 255,0.5);
+  }
+
+  @media (max-width:578px) {
+    .chat1{
+       flex: 1;
+    } 
+    .chat2{
+       flex: 1;
+       display: 'd-none';
+    }
+    #backbutton{
+       display:inline;
+    }
+ 
+  }
+</style>
+  <div class="d-flex m-5  border rounded-3" style="height: 90%;">
+   
+    <div class="d-flex flex-column h-100 align-items-center 
+                bg-transBody  p-0 m-0 border-end  chat1">
+        <div class="border-bottom w-100 d-flex justify-content-center align-items-center " style="height:75px">
+          <h4 class="text-uppercase" id="current-profile" >{{request.user}}</h4>
+          <script id="userData" type="application/json">
+            { "username": "{{ request.user.username }}"}
+        </script>
+        </div>
+        <div class="overflow-y-auto w-100" style="height: 90%;">
+          <ul class=" w-100 p-0 m-0 ">
+            {% for i in pat%}
+                <li class="border-bottom rounded-0" data-username="{{ i.patient.user}}" > 
+                   
+                   <a href="javascript:void(0)" 
+                   value="{{i.docter_id}}" class="btn w-100  open-chat-btn" 
+                   data-user-id="{{i.id}}">{{i.docter}}
+                   <h6 class="d-inline  float-right {% if i.patient.user.online %} bg-success
+                    {% else %} bg-danger {% endif %}" id="light{{i.docter_id}}"></h6> 
+                  </a> 
+                </li>       
+              
+
+            {% endfor %}
+          </ul>
+           
+        </div>
+        
+    </div>
+    <div class="position-relative d-flex flex-column h-100 p-0 m-0 bg-transBody  chat2">
+      <div class="d-flex justify-content-center align-items-center h-100 chat2default">
+       <p class="d-inline">select the docter to begine chat</p> <i class="bi bi-chat-dots " style="font-size: 2em; padding-bottom: 15px; margin-left:5px;"></i>
+      </div>
+      <div class="position-relative d-flex d-none flex-column h-100 p-0 m-0  chat2defaultnone">
+          <div class="d-flex align-items-center border-bottom row" style="height:75px; margin-right:1px; margin-left: 1px;">
+            <div class="col-lg-2 col-md-2 col-sm-4  col-4 d-flex h-100 align-items-center pr-0 pl-0 mr-0 ml-0">
+                  <a href="javascript:void(0)" onclick="closeChat(event)" id="backbutton">
+                      <i class="bi bi-arrow-left-short text-black" style="font-size: 2em;"></i>
+                  </a>  
+                  <div style="height:95%;width:60%; border-radius:50%; background-color: antiquewhite; overflow: hidden;">
+                    <img src=""  alt="img" id="profileimage"  
+                        style="width: 100%; height: 100%; object-fit: cover;" 
+                        onerror="this.src='{% static 'chat/img/unknown.jpg' %}';">
+
+                  </div>                  
+                  <!-- <div style="height: 0; padding-bottom: 70%; border-radius: 50%; background-color: antiquewhite; position: relative; overflow: hidden;">
+                    <img src="" alt="img" id="profileimage" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+                </div> -->
+            </div>
+            <div class="col-lg-10 col-md-10 col-sm-8 col-8 d-flex justify-content-between">
+              <div style="transform: translate(-9%, 0%);">
+                <h3 class="p-0 m-0" id="profilename" style="transform: translate(-9%, 0%);"></h3>
+                <h6 class="p-0 m-0" id="profileonline"style="transform: translate(-9%, 0%);" ></h6>
+              </div>
+              <div>
+                <i class="bi bi-camera-video" id="vedioButton"></i>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex flex-column" style="height: 90%;">
+            <div class="overflow-y-auto p-3"  id="chat-content" style="height:95% ; scrollbar-width: thin;
+            scrollbar-color: transparent rgba(0, 0, 0, 0.3)">
+            </div>
+            <form class="position-relative"role="search">
+              <input class="form-control" type="search" id="chat-input" placeholder="Search" aria-label="Search">
+              <button class="btn btn-sm btn-success position-absolute w-15"
+              type="submit" style="right:2px;top: 2px;" id="chat-submit">Search</button>
+            </form>
+            
+          </div>
+      </div>    
+    </div>
+    <script>
+      let roomName=undefined;
+      let currentSocket;
+      const chatLog = document.querySelector('#chat-content');
+      const userProfile = document.getElementById('userData');
+      const userProfileData = JSON.parse(userProfile.textContent);
+    
+      const chat1 = document.querySelector('.chat1');
+      const chat2 = document.querySelector('.chat2');
+      const chat2defaultnone = document.querySelector('.chat2defaultnone');
+      const chat2default = document.querySelector('.chat2default'); 
+
+      // const videoBox = document.getElementById('videoBox');
+      
+      // let isDragging = false;
+      // let offsetX, offsetY;
+
+      // videoBox.addEventListener('mousedown', startDrag);
+      // videoBox.addEventListener('mouseup', stopDrag);
+      // videoBox.addEventListener('mousemove', drag);
+
+      window.addEventListener('load', function() {      
+            // videoBox.style.display='none';
+            if (window.innerWidth < 578) {
+               if (!chat2.classList.contains('d-none') && chat1.classList.contains('d-none')){
+            
+               }
+               else{
+                    chat2.classList.add('d-none');    
+                  }
+            }
+            else {
+                    chat1.classList.remove('d-none');
+                    chat2.classList.remove('d-none');
+                }
+        });
+      
+      
+      
+      
+      
+      window.addEventListener('resize', function() {      
+            // chat2defaultnone.classList.add('d-none')
+            if (window.innerWidth < 578) {
+               if (!chat2.classList.contains('d-none') && chat1.classList.contains('d-none')){
+            
+               }
+               else{
+                    chat2.classList.add('d-none');    
+                  }
+            }
+            else {
+                    chat1.classList.remove('d-none');
+                    chat2.classList.remove('d-none');
+                }
+        });
+
+      document.addEventListener('DOMContentLoaded',function(){
+        const bt=document.querySelectorAll('.open-chat-btn');
+        bt.forEach(function(a){
+          a.addEventListener('click',function(){
+            const id=a.dataset.userId;
+            bt.forEach(function(a) {
+                a.classList.remove('act');
+            });
+            a.classList.add('act')
+            openChat(id)
+          })
+        })
+      })
+
+
+      function openChat(id) {
+        chat2defaultnone.classList.remove('d-none')
+        chat2default.classList.add('d-none')
+        // event.preventDefault();
+        // roomName=JSON.parse(id) 
+        // console.log(roomName);
+        if (window.innerWidth < 578) {
+          chat1.classList.add('d-none');
+          chat2.classList.remove('d-none');
+        }
+
+        if (currentSocket && currentSocket.readyState === WebSocket.OPEN) {
+          while (chatLog.firstChild) {
+                 chatLog.removeChild(chatLog.firstChild);
+            }
+          currentSocket.close();
+      }
+
+      // Create a new WebSocket connection for the selected user
+          console.log('room name ',id)
+          console.log(typeof id);
+          var roomName=id
+          const socket = new WebSocket('ws://'+ window.location.host+ '/ws/'+ roomName + '/');
+
+          socket.onopen = function (e) {
+            // console.log(WebSocket connection opened for ${userId}:, event);
+            // const data = JSON.parse(e.data);
+            // console.log(data)
+
+          };
+
+          socket.onmessage = function(e) {
+                    const data = JSON.parse(e.data);
+                    console.log(data)
+                    const onoff = document.getElementById("profilename");
+                    const onimage = document.getElementById("profileimage");
+                    const onOnline = document.getElementById("profileonline");
+
+                    if (data.message !=undefined){
+                        console.log(data.message);                 
+                        const msge = document.createElement('p');
+                        msge.innerText = data.message;
+                        if (data.css_class === "current-user") {
+                            msge.style.textAlign = 'right';
+                            msge.style.color = 'blue';
+                        } else {
+                            msge.style.textAlign = 'left';
+                            msge.style.color = 'red';                  
+                        }
+                    chatLog.appendChild(msge);
+                    }
+                    if (data.username == userProfileData.username){ 
+                   if(data.profile !=undefined){
+                     
+                     onoff.innerHTML=data.profile      
+                   }
+                   if (data.images !=undefined){
+                    onimage.src=data.images 
+                   } 
+                   if (data.is_online ==true){
+                      onOnline.innerHTML='online'
+                   }
+                   if (data.is_online ==false){
+                      onOnline.innerHTML='offline'
+                   }
+                  }
+                  if (data.me_online !=undefined && data.username != userProfileData.username){ 
+                   if (data.me_online ==true){
+                      onOnline.innerHTML='online'
+                   }
+                   if (data.me_online ==false){
+                      onOnline.innerHTML='offline'
+                   }
+                  }
+
+          };
+
+          socket.onerror = function (error) {
+            // console.error(WebSocket error for ${userId}:, error);
+          };
+
+          socket.onclose = function (event) {
+            // console.log(WebSocket connection closed for ${userId}:, event);
+          };
+
+          // Set the currentSocket to the new WebSocket connection
+          currentSocket = socket;
+      }
+
+
+        document.querySelector('#chat-submit').addEventListener('click', function(e) {
+                    e.preventDefault() 
+                    if (currentSocket && currentSocket.readyState === WebSocket.OPEN) { 
+                    const messageInputDom = document.querySelector('#chat-input');
+                    const message = messageInputDom.value;
+                    console.log(message)
+                    currentSocket.send(JSON.stringify({
+                        'message': message
+                    }));
+                    messageInputDom.value = '';
+                  }
+                });
+
+
+
+      function closeChat(event) {
+        event.preventDefault(); 
+        // chatSocket.close();
+        if (chat1 && chat2) {
+          chat2.classList.add('d-none');
+          chat1.classList.remove('d-none');
+        }
+        if (currentSocket && currentSocket.readyState === WebSocket.OPEN) {
+        currentSocket.close();
+      }
+
+      }
+       
+      //   const chatSocket = new WebSocket('ws://'+ window.location.host+ '/ws/'+ roomName+ '/');
+      //   chatSocket.onmessage = function(e) {
+      //               const data = JSON.parse(e.data);
+      //               const chatLog = document.querySelector('#chat-content');
+      //               console.log(data.message)
+      //               if (data.message !=undefined){
+      //                   console.log(data.message);                 
+      //                   const msge = document.createElement('p');
+      //                   msge.innerText = data.message;
+      //                   if (data.css_class === "current-user") {
+      //                       msge.style.textAlign = 'right';
+      //                       msge.style.color = 'blue';
+      //                   } else {
+      //                       msge.style.textAlign = 'left';
+      //                       msge.style.color = 'red';                  
+      //                   }
+      //               chatLog.appendChild(msge);
+      //               }
+      //             }
+
+      // document.querySelector('#chat-submit').addEventListener('click', function(e) {
+      //               e.preventDefault()  
+      //               const messageInputDom = document.querySelector('#chat-input');
+      //               const message = messageInputDom.value;
+      //               console.log(message)
+      //               chatSocket.send(JSON.stringify({
+      //                   'message': message
+      //               }));
+      //               messageInputDom.value = '';
+      //           });
+
+      
+
+     
+
+        // function startDrag(e) {
+        //     isDragging = true;
+        //     offsetX = e.offsetX;
+        //     offsetY = e.offsetY;
+        // }
+
+        // function stopDrag() {
+        //     isDragging = false;
+        // }
+        // function drag(e) {
+        //     if (isDragging) {
+        //         videoBox.style.top = (e.clientY - offsetY) + 'px';
+        //         videoBox.style.left = (e.clientX - offsetX) + 'px';
+        //     }
+        // }
+
+        // // Close button functionality
+        // const closeButton = document.getElementById('closeButton');
+        // closeButton.addEventListener('click', () => {
+        //     videoBox.style.display = 'none'; // Hide the box on close
+        // });
+        // const vedioButton = document.getElementById('vedioButton');
+        // vedioButton.addEventListener('click', () => {
+        //     videoBox.style.display = 'block'; // Hide the box on close
+        // });
+
+
+    </script>  
+    <!-- <script  src="{%static 'Doc\js\HospitalDocter.js' %}"></script> -->
+   
+  </div>
+
+
+
+{%endblock%}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 
+
+
+
+             
+{% if messages%}                  
+{% for message in messages %}
+{% if message.tags == 'error'%}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        var m="{{message}}";
+        console.log(m);
+        Swal.fire({
+                position: 'center',
+                icon: 'error',
+                title: m,
+                showConfirmButton: false,
+                timer: 4000
+                })
+       </script>
+       {%endif%}
+{% if message.tags == 'success'%}
+       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+       <script>
+           var m="{{message}}";
+           console.log(m);
+           Swal.fire({
+                   position: 'center',
+                   icon: 'success',
+                   title: m,
+                   showConfirmButton: false,
+                   timer: 4500
+                   })
+          </script>
+          {%endif%}       
+{% endfor %}
+{%endif%} 
+<style>
+  
+  .lc{
+  padding: 0;
+  }
+  .slid {
+    cursor: pointer;
+    float:right;
+    height: 20px;
+    width: 20px;
+    border-radius: 20px;
+  }
+  
+</style> 
+      <div class="row  no-gutters m-5 justify-content-center rounded-2  p-0">
+        <div class="col-lg-4 col-md-4  col-sm-3 col-xs-2 bg-transBody  lc" style="height:505px">    
+            <h5 class="px-1 text-uppercase ml-5 mt-3">{{request.user}}</h5>
+            <ul id="user-list">
+              {% for i in pat%}
+                {% if i.patient.user.online%}
+                  <li  data-username="{{ i.patient.user}}" style="list-style: none;"> 
+                     <a href="{%url 'docter:msgg' i.id %}" id="{{i.patient.user.username}}_status" 
+                     class="btn bg-transBody w-75 m-1 open-chat-btn" value="{{i.docter_id}}" >{{i.patient}}
+                     <h6 class="d-inline slid float-right bg-success" id="light{{i.docter_id}}"></h6> 
+                    </a>      
+                 </li>
+                {%else%}
+                 <li  data-username="{{ i.patient.user}}" style="list-style: none;"> 
+                    <a href="{%url 'docter:msgg' i.id %}" id="{{i.patient.user.username}}_status"
+                     class="btn bg-transBody  w-75 m-1 open-chat-btn" value="{{i.docter_id}}" >{{i.patient}}
+                     <h6 class="d-inline slid float-right bg-danger" ></h6> 
+                    </a>         
+                 </li>
+                {%endif%}   
+              {% endfor %}
+            </ul>
+        </div>
+        <div class="col-lg-8 col-md-8 col-sm-5 col-xs-4 lc" >      
+          {% block 'subject' %}
+
+
+          {% endblock %}
+        </div>
+      </div>      

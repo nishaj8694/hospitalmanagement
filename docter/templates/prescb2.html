@@ -1,0 +1,23 @@
+{% extends "doc.html" %}
+{% block 'content'%}
+<div class="container-fluid">
+    <div class="row justify-content-center align-item-center">
+            <div class="card d-flex flex-column align-items-center    text-center p-3 py-5">
+                {%for i in list%}
+                        <h6>{{i.medicine}}</h6>
+                        <div class="input-group input-spinner">
+                            <div class="input-group-prepend rounded">
+                                <a href="{% url 'docter:decr' i.id %}" class="btn btn-light rounded " type="button"  ><i class="fa fa-minus"></i></a>
+                            </div>
+                            <input type="text" class="form-control text-center text-dark border-0 bg-light" id="qtvl" value="{{i.quantity}}" readonly>
+                            <div class="input-group-append rounded">
+                                <a href="{% url 'docter:incr' i.id %}" class="btn btn-light rounded " type="button"  ><i class="fa fa-plus"></i></a>
+                            </div>
+                        </div>
+                {%endfor%}
+                    <a href="{% url 'docter:doc_appointment' %}" class="btn  btn-light mt-4 "  >submit</a>    
+            </div>
+            
+    </div>
+</div>        
+{%endblock%}  

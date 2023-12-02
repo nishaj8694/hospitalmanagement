@@ -1,0 +1,33 @@
+{% extends "doc.html" %}
+
+{%load crispy_forms_tags %} 
+
+{% block 'content'%}
+    
+<div class="container">
+    <div class="row justify-content-center mt-5 bg-transBody">
+        {% if messages %}
+             {% for message in messages %}
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <strong>{{message}}</strong>
+                </div>
+            {% endfor %}
+        {%endif%}  
+        <div class="card col-lg-7 col-md-9 col-sm-10 P-5">
+            <h3 class="text-center mt-5">Profile</h3>
+              
+                        <form action="{% url 'docter:doc_Profile' %}" method="post"  enctype="multipart/form-data" class="p-5">
+                                {% csrf_token %}
+                                {{form|crispy}}
+                                <div class="text-center">
+                                    <button class="btn btn-primary mt-2 w-50" type="submit">submit</button>
+                                </div>
+                        </form>
+        </div>
+    </div>
+</div>         
+
+   
+
+{%endblock%}
