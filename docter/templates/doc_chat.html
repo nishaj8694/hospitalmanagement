@@ -16,6 +16,9 @@
   .act{
     background-color: rgb(255, 255, 255,0.5);
   }
+  #vedioButton{
+
+  }
   @media (max-width:578px) {
     .chat1{
        flex: 1;
@@ -75,10 +78,20 @@
 
                   </div>
             </div>
-            <div class="col-lg-10 col-md-10 col-sm-8 col-8">
+            <div class="col-lg-10 col-md-10 col-sm-8 col-8 d-flex justify-content-between">
+              <div style="transform: translate(-9%, 0%);">
+                <h3 class="p-0 m-0" id="profilename" ></h3>
+                <h6 class="p-0 m-0" id="profileonline" ></h6>
+              </div>
+              <div style="transform: translate(0%, 25%);">
+                <i class="bi bi-camera-reels-fill" id="vedioButton"></i>
+              </div>
+            </div>
+            <!-- <div class="col-lg-10 col-md-10 col-sm-8 col-8">
                 <h3 class="p-0 m-0" id="profilename" style="transform: translate(-9%, 0%);"></h3>
                 <h6 class="p-0 m-0" id="profileonline" style="transform: translate(-9%, 0%);"></h6>
-            </div>
+            </div> -->
+
           </div>
           <div class="d-flex flex-column" style="height: 90%;">
             <div class="overflow-y-auto p-3"  id="chat-content" style="height:95% ; scrollbar-width: thin;
@@ -93,183 +106,8 @@
           </div>
       </div>    
     </div>
-    <script>
-      let roomName=undefined;
-      let currentSocket;
-      const chatLog = document.querySelector('#chat-content');
-      const chat1 = document.querySelector('.chat1');
-      const chat2 = document.querySelector('.chat2');
-      const userProfile = document.getElementById('userData');
-      const userProfileData = JSON.parse(userProfile.textContent);
-
-      const chat2defaultnone = document.querySelector('.chat2defaultnone');
-      const chat2default = document.querySelector('.chat2default');
-       
-
-
-      window.addEventListener('load', function() {      
-            
-            if (window.innerWidth < 578) {
-               if (!chat2.classList.contains('d-none') && chat1.classList.contains('d-none')){
-            
-               }
-               else{
-                    chat2.classList.add('d-none');    
-                  }
-            }
-            else {
-                    chat1.classList.remove('d-none');
-                    chat2.classList.remove('d-none');
-                }
-        });
-
-
-      window.addEventListener('resize', function() {      
-            if (window.innerWidth < 578) {
-               if (!chat2.classList.contains('d-none') && chat1.classList.contains('d-none')){
-            
-               }
-               else{
-                    chat2.classList.add('d-none');    
-                  }
-            }
-            else {
-                    chat1.classList.remove('d-none');
-                    chat2.classList.remove('d-none');
-                }
-        });
-
-      document.addEventListener('DOMContentLoaded',function(){
-        const bt=document.querySelectorAll('.open-chat-btn');
-        bt.forEach(function(a){
-          a.addEventListener('click',function(){
-            const id=a.dataset.userId;
-            bt.forEach(function(a) {
-                a.classList.remove('act');
-            });
-            openChat(id)
-          })
-        })
-      })
-
-
-      function openChat(id) {
-        chat2defaultnone.classList.remove('d-none')
-        chat2default.classList.add('d-none')
-        if (window.innerWidth < 578) {
-          chat1.classList.add('d-none');
-          chat2.classList.remove('d-none');
-        }
-
-        if (currentSocket && currentSocket.readyState === WebSocket.OPEN) {
-            while (chatLog.firstChild) {
-                 chatLog.removeChild(chatLog.firstChild);
-            }
-            currentSocket.close();
-          }
-          var roomName=id
-          const socket = new WebSocket('ws://'+ window.location.host+ '/ws/'+ roomName + '/');
-
-          socket.onopen = function (event) {
-            // console.log(WebSocket connection opened for ${userId}:, event);
-          };
-
-          socket.onmessage = function(e) {
-                    const data = JSON.parse(e.data);
-                    const onoff = document.getElementById("profilename");
-                    const onimage = document.getElementById("profileimage");
-                    const onOnline = document.getElementById("profileonline");
-                    console.log(data.message)
-                    if (data.message !=undefined){
-                        console.log(data);                 
-                        const msge = document.createElement('p');
-                        msge.innerText = data.message;
-                        if (data.css_class === "current-user") {
-                            msge.style.textAlign = 'right';
-                            msge.style.color = 'blue';
-                        } else {
-                            msge.style.textAlign = 'left';
-                            msge.style.color = 'red';                  
-                        }
-                    chatLog.appendChild(msge);
-                    }
-                    console.log('1',data.username)
-                    console.log('2',userProfileData.username)
-                    
-                    if (data.username == userProfileData.username){ 
-                    if(data.profile !=undefined){
-                     
-                     onoff.innerHTML=data.profile      
-                   }
-                   if (data.images !=undefined){
-                    onimage.src=data.images 
-                   } 
-                   if (data.is_online ==true){
-                      onOnline.innerHTML='online'
-                   }
-                   if (data.is_online ==false){
-                      onOnline.innerHTML='offline'
-                   }
-                  }
-
-                  if (data.me_online !=undefined && data.username != userProfileData.username){ 
-                   if (data.me_online ==true){
-                      onOnline.innerHTML='online'
-                   }
-                   if (data.me_online ==false){
-                      onOnline.innerHTML='offline'
-                   }
-                  }
-                  
-          };
-
-          socket.onerror = function (error) {
-            // console.error(WebSocket error for ${userId}:, error);
-          };
-
-          socket.onclose = function (event) {
-            // console.log(WebSocket connection closed for ${userId}:, event);
-          };
-
-          // Set the currentSocket to the new WebSocket connection
-          currentSocket = socket;
-      }
-
-
-        document.querySelector('#chat-submit').addEventListener('click', function(e) {
-                    e.preventDefault() 
-                    if (currentSocket && currentSocket.readyState === WebSocket.OPEN) { 
-                    const messageInputDom = document.querySelector('#chat-input');
-                    const message = messageInputDom.value;
-                    console.log(message)
-                    currentSocket.send(JSON.stringify({
-                        'message': message
-                    }));
-                    messageInputDom.value = '';
-                  }
-                });
-
-
-      function closeChat(event) {
-        event.preventDefault(); 
-        if (chat1 && chat2) {
-          chat2.classList.add('d-none');
-          chat1.classList.remove('d-none');
-        }
-        if (currentSocket && currentSocket.readyState === WebSocket.OPEN) {
-            console.log('currentSocket is on')
-            while (chatLog.firstChild) {
-                 chatLog.removeChild(chatLog.firstChild);
-            }
-            currentSocket.close();
-          }
-
-      }
-       
-    
-      
-
-    </script>  
+     <!-- <script  src="vediochat.js"></script>   -->
+     <script  src="{%static 'Doc\js\vediochat.js' %}"></script>
    
   </div>
 

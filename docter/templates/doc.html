@@ -14,8 +14,123 @@
         <link rel="stylesheet"  href="{%static 'Doc\css\HospitalDocter.css' %}">
         {% block js %}
         {% endblock %}
+        <style>
+          @keyframes vibrationCall {
+          0%  {transform: rotate(0deg);}
+          25% {transform: rotate(3deg);}
+          50% {transform: rotate(0deg);}
+          75% {transform: rotate(-3deg);}
+          100% {transform: rotate(0deg);}
+          
+        }
+          #vedioAnswercall{
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            background-color: rgb(83, 83, 84,0.5);
+            z-index: 9999998;
+            display: none;          
+          }
+         .answerBox{
+          width: 300px;
+          height: 100px;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%,-50%);
+          background-color: white;
+          z-index: 9999999;
+          display: flex;
+          justify-content:center;
+          align-items: center;
+          flex-direction: column;
+          gap: 5px;
+          border-radius: 5px;
+          animation: vibrationCall 1ms linear 0s infinite ;
+
+
+         }
+
+          .video-box {
+                      position: absolute;
+                      display: none;
+                      right: 10%;
+                      top:10%;
+                      width: 500px;
+                      height: auto;
+                      /* cursor: move; */
+                      z-index: 99990;
+                      border-radius: 10px;
+                      resize: both;
+                      overflow:auto;
+                      background-color: rgb(255, 255, 255,0.5);
+                  }
+           #closeButton{
+             cursor:pointer;
+             position: absolute;
+             bottom: 2%;
+             right: 40%;
+             color: red;
+             z-index: 99999;
+             padding: 5px 10px 5px 10px;
+             border-radius: 50%;
+             background-color: aliceblue;
+           }       
+           #stopvedioButton{
+            cursor:pointer;
+            position: absolute;
+            bottom: 2%;
+            right: 50%;
+            z-index: 99999;
+            padding: 5px 10px 5px 10px;
+             border-radius: 50%;
+             background-color: aliceblue;
+           }
+
+           #video-box-User{
+            position: absolute;
+                      display: none;
+                      right: 1%;
+                      bottom:1%;
+                      width: 100px;
+                      height: auto;
+                      cursor: move;
+                      z-index: 99999;
+                      border-radius: 10px;
+                      /* resize: both; */
+                      overflow:auto;
+                      background-color: rgb(255, 255, 255,0.5);
+           }
+          @media (max-width:578px) {
+      
+           .video-box{
+               width: 350px;
+               height: 350px;
+            }
+            .answerBox{
+              position: absolute;
+              top: 50%;
+              left: 10%;
+              transform: translate(-50%,-50%);
+            }
+      
+          }
+        </style>   
     </head>
       <body>
+        <div id="vedioAnswercall">
+            <div class="answerBox">
+              <p>Patient<label id="callerPerson"></label> is  calling...</p>
+              <div>
+                <button type="button" class="btn btn-success" id="callAnswer">Answer</button>
+                <button type="button" class="btn btn-danger" id="callDecline">Decline</button> 
+              </div>
+              <audio id="caller"  style="position: absolute; bottom: 0 ; 
+                          left: 0;   visibility: hidden;"  loop>
+                <source src="{%static 'log\assets\audio\simple_bell_2.mp3'%}" type="audio/mp3">
+              </audio> 
+            </div> 
+        </div>
         <div class="Patienthead px-3">
          <div>
           <a href="{% url 'home:home' %}"id="adminimage">
@@ -37,6 +152,13 @@
           </div>
         </div>
         <div class="adminbody">
+          <div class="video-box" id="video-Box">
+            <!-- Video chat elements will go here -->
+                <i class="bi bi-telephone-fill" id="closeButton"></i>
+                <i class="bi bi-camera-video-off-fill" id="stopvedioButton"></i>
+                <div class="video-box-user" id="video-box-User"></div>
+  
+          </div>
           <div id="mySidenav" class="sidenav" >
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
             <form class="mt-3 my-2 searchNavigation"role="search">
@@ -109,13 +231,6 @@
                 </div>
               </div> 
             </div>
-            <script>
-              var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-              var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
-              });
-            </script>
-            
             <script  src="{%static 'Doc\js\HospitalDocter.js' %}"></script>
             <script  src="{%static 'Doc\js\available.js' %}"></script> 
           </div>  

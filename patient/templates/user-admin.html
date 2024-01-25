@@ -14,32 +14,123 @@
       {% block js %}
       {% endblock %}
       <style>
-
-        .video-box {
-                    position: absolute;
-                    display: none;
-                    right: 10%;
-                    top:10%;
-                    width: 500px;
-                    height: 500px;
-                    cursor: move;
-                    z-index: 99999;
-                    border-radius: 10px;
-                    resize: both;
-                    overflow:auto;
-                    background-color: rgb(255, 255, 255,0.5);
-                }
-        @media (max-width:578px) {
-    
-         .video-box{
-             width: 350px;
-             height: 350px;
-          }
-    
+        @keyframes vibrationCall {
+          0%  {transform: rotate(0deg);}
+          25% {transform: rotate(3deg);}
+          50% {transform: rotate(0deg);}
+          75% {transform: rotate(-3deg);}
+          100% {transform: rotate(0deg);}
+          
         }
+        #vedioAnswercall{
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            background-color: rgb(83, 83, 84,0.5);
+            z-index: 9999998;
+            display: none;          
+          }
+         .answerBox{
+          width: 300px;
+          height: 100px;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%,-50%);
+          background-color: white;
+          z-index: 9999999;
+          display: flex;
+          justify-content:center;
+          align-items: center;
+          flex-direction: column;
+          gap: 5px;
+          border-radius: 5px;
+          animation: vibrationCall 1ms linear 0s infinite ;
+
+
+         }
+        
+        .video-box {
+                      position: absolute;
+                      display: none;
+                      right: 10%;
+                      top:10%;
+                      width: 500px;
+                      height: auto;
+                      /* cursor: move; */
+                      z-index: 99990;
+                      border-radius: 10px;
+                      resize: both;
+                      overflow:auto;
+                      background-color: rgb(255, 255, 255,0.5);
+                  }
+           #closeButton{
+             cursor:pointer;
+             position: absolute;
+             bottom: 2%;
+             right: 40%;
+             color: red;
+             z-index: 99999;
+             padding: 5px 10px 5px 10px;
+             border-radius: 50%;
+             background-color: aliceblue;
+           }       
+           #stopvedioButton{
+            cursor:pointer;
+            position: absolute;
+            bottom: 2%;
+            right: 50%;
+            z-index: 99999;
+            padding: 5px 10px 5px 10px;
+             border-radius: 50%;
+             background-color: aliceblue;
+           }
+
+           #video-box-User{
+            position: absolute;
+                      display: none;
+                      right: 1%;
+                      bottom:1%;
+                      width: 100px;
+                      height: auto;
+                      cursor: move;
+                      z-index: 99999;
+                      border-radius: 10px;
+                      /* resize: both; */
+                      overflow:auto;
+                      background-color: rgb(255, 255, 255,0.5);
+           }
+          @media (max-width:578px) {
+      
+           .video-box{
+               width: 350px;
+               height: 350px;
+            }
+            .answerBox{
+              position: absolute;
+              top: 50%;
+              left: 10%;
+              transform: translate(-50%,-50%);
+            }
+      
+          }
+          
       </style>          
   </head>
     <body>
+      <div id="vedioAnswercall">
+        <div class="answerBox">
+          <p>Dr <label id="callerPerson"></label> is calling...</p>
+          <div>
+            <button type="button" class="btn btn-success" id="callAnswer">Answer</button>
+            <button type="button" class="btn btn-danger" id="callDecline">Decline</button>
+          </div>
+          <audio id="caller"  style="position: absolute;  bottom: 0 ; 
+             left: 0;   visibility: hidden;" loop>
+            <source src="{%static 'log\assets\audio\simple_bell_2.mp3' %}" type="audio/mp3">
+          </audio> 
+        </div> 
+    </div>
       <div class="Patienthead px-3">
        <div>
         <a href="{% url 'home:home' %}"id="adminimage">
@@ -57,6 +148,13 @@
         </div>
       </div>
       <div class="adminbody">
+        <div class="video-box" id="video-Box">
+          <!-- Video chat elements will go here -->
+              <i class="bi bi-telephone-fill" id="closeButton"></i>
+              <i class="bi bi-camera-video-off-fill" id="stopvedioButton"></i>
+              <div class="video-box-user" id="video-box-User"></div>
+
+        </div>
         <div id="mySidenav" class="sidenav" >
           <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
          <li class="sidebar-header">MAIN NAVIGATION</li>
@@ -113,143 +211,12 @@
               {{request.user.username}} -->
             </div> 
           </div>
-          <script>
-              $(document).ready(function() {
-    var isDragging = false;
-    var offsetX, offsetY;
-    var initialWidth, initialHeight;
-    var videoBox = document.getElementById('video-Box');
-
-    function vedio() {
-        $('#video-Box').show();
-    }
-   let mediaStream
-    function stop(){
-      if (mediaStream) {
-              mediaStream.getTracks().forEach(track => track.stop());
-              const videoElement = document.getElementById('videoElement');
-          if (videoElement) {
-            videoElement.remove(); 
-          }
-        }
-      }
-   
-
-
-    $('#vedioButton').on('click', function() {
-        console.log('Video button clicked');
-        videoBox.style.display='block'
-        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-                .then(function(stream) {
-                    mediaStream = stream; 
-                    var video = document.createElement('video');
-                    video.srcObject = stream;
-                    video.autoplay = true;
-                    video.setAttribute('id', 'videoElement');
-                    video.style.width = '100%'; 
-                    video.style.height = '90%';
-                    // video.style.overflow='hidden';
-                    videoBox.appendChild(video);
-                })
-                .catch(function(err) {
-                    console.error('Error accessing media devices:', err);
-                }); 
-    });
-
-    $('#closeButton').on('click', function() {
-
-        console.log('Close button clicked');
-        videoBox.style.display='none'
-        stop()
-        // $('#video-Box').hide();
-    });
-    $('#stopButton').on('click', function() {
-      stop();
-     });
-
-    function startDrag(e) {
-        isDragging = true;
-        offsetX = e.clientX - videoBox.getBoundingClientRect().left;
-        offsetY = e.clientY - videoBox.getBoundingClientRect().top;
-        initialWidth = videoBox.offsetWidth;
-        initialHeight = videoBox.offsetHeight;
-    }
-
-    function stopDrag() {
-        isDragging = false;
-    }
-
-    function drag(e) {
-        if (isDragging) {
-            videoBox.style.top = (e.clientY - offsetY) + 'px';
-            videoBox.style.left = (e.clientX - offsetX) + 'px';
-        }
-    }
-
-    videoBox.addEventListener('mousedown', startDrag);
-    videoBox.addEventListener('mouseup', stopDrag);
-    videoBox.addEventListener('mousemove', drag);
-});
-
-
-
-
-
-        //      const videoBox = document.getElementById('videoBox');
-        //      console.log('vediio',videoBox)
-        //      let isDragging = false;
-        //     let offsetX, offsetY;
-
-        //     videoBox.addEventListener('mousedown', startDrag);
-        //     videoBox.addEventListener('mouseup', stopDrag);
-        //     videoBox.addEventListener('mousemove', drag);
-        //     window.addEventListener('load', function() {      
-        //         videoBox.style.display='none';
-        //      });
-
-        //      function startDrag(e) {
-        //     isDragging = true;
-        //     offsetX = e.offsetX;
-        //     offsetY = e.offsetY;
-        // }
-
-        // function stopDrag() {
-        //     isDragging = false;
-        // }
-        // function drag(e) {
-        //     if (isDragging) {
-        //         videoBox.style.top = (e.clientY - offsetY) + 'px';
-        //         videoBox.style.left = (e.clientX - offsetX) + 'px';
-        //     }
-        // }
-
-        // // Close button functionality
-        // const closeButton = document.getElementById('closeButton');
-        // closeButton.addEventListener('click', () => {
-        //     videoBox.style.display = 'none'; // Hide the box on close
-        // });
-        // const vedioButton = document.getElementById('vedioButton');
-        // vedioButton.addEventListener('click', () => {
-        //     videoBox.style.display = 'block'; // Hide the box on close
-        // });
-
-             
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-              return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
-          </script>
-           
           
+           
+          <!-- <script  src="{%static 'Doc\js\vediocall.js' %}"></script> -->
           <script  src="{%static 'Doc\js\HospitalDocter.js' %}"></script> 
         </div>  
         <div class="admincontent">
-          <div class="video-box" id="video-Box">
-            <!-- Video chat elements will go here -->
-                <i class="bi bi-x-square-fill" id="closeButton" style="float: right; margin-right: 10px;font-size: larger;"></i>
-                <button id="stopButton">stop</button>
-
-          </div>
                   {% if messages%}                  
                      {% for message in messages %}
                         {% if message.tags == 'error'%}

@@ -3,6 +3,18 @@
 
 {% block 'content' %}
 <div class="container">
+  <script>
+    $(document).ready(function() {
+      // var isDragging = false;
+      // var offsetX, offsetY;
+      // var initialWidth, initialHeight;
+      // var videoBox = document.getElementById('video-Box');
+
+      function vedio() {
+          $('#video-Box').show();
+      }
+    })
+  </script>    
   {% if messages %}
   {% for message in messages %}
                  {% if message.tags == 'error'%}
